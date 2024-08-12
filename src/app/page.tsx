@@ -26,7 +26,7 @@ export default async function Home() {
               <h3 className="text-2xl font-bold">First Steps →</h3>
               <div className="text-lg">
                 Just the basics - Everything you need to know to set up your
-                database and authentication.
+                database and authentication. aaaa
               </div>
             </Link>
             <Link
