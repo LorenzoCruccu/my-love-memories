@@ -67,6 +67,7 @@ html[data-theme='dark'] .gm-style {
   height: 40px;
   padding: 0 12px;
   font-size: 18px;
+	color: black;
 }
 
 .autocomplete-container .custom-list {

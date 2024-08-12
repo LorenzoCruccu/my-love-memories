@@ -13,6 +13,8 @@ import {
 import { api } from "~/trpc/react";
 import { type Marker } from "@prisma/client";
 import ControlPanel from "./controlPanel";
+import { CustomMapControl } from "./mapControl";
+import MapHandler from "./map-handler";
 
 const center = {
   lat: 42.5,
@@ -21,6 +23,9 @@ const center = {
 
 const GoogleMapComponent = () => {
   const [allMarkers] = api.marker.getAllMarkers.useSuspenseQuery();
+
+  const [selectedPlace, setSelectedPlace] =
+    useState<google.maps.places.PlaceResult | null>(null);
 
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
@@ -32,8 +37,13 @@ const GoogleMapComponent = () => {
         disableDefaultUI={false}
         mapId={"525423038a968bd5"}
       >
-        <ControlPanel />
+        <CustomMapControl
+          controlPosition={ControlPosition.TOP}
+          onPlaceSelect={setSelectedPlace}
+        />
+        <MapHandler place={selectedPlace} />
 
+        <ControlPanel />
 
         {allMarkers.map((_marker) => (
           <MarkerWithInfoWindow key={_marker.id} marker={_marker} />
