@@ -17,6 +17,7 @@ import MapHandler from "./map-handler";
 import { CreateMarkerModal } from "./createMarkerModal";
 import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
+import { Button } from "~/components/ui/button";
 
 const center = {
   lat: 42.5,
@@ -38,6 +39,27 @@ const GoogleMapComponent = () => {
   } | null>(null);
 
   const [isLoading, setIsLoading] = useState(true); // Loading state for the map
+
+  const utils = api.useUtils();
+
+  const deleteMarker = api.marker.delete.useMutation({
+    onSuccess: async () => {
+      await utils.marker.invalidate();
+    },
+  });
+
+  const handleDelete = (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    marker: Marker,
+  ) => {
+    console.log(marker);
+    e.preventDefault();
+    if (marker.createdById == session?.user.id) {
+      deleteMarker.mutate({
+        id: marker.id,
+      });
+    }
+  };
 
   const handleMarkerCreated = () => {
     setShowDialog(false);
@@ -129,7 +151,15 @@ const GoogleMapComponent = () => {
             }
           >
             <div className="text-black">
-              <p className="font-">{marker.description}</p>
+              <p>{marker.description}</p>
+              {marker.createdById == session?.user.id && (
+                <Button
+                  variant={"destructive"}
+                  onClick={(e) => handleDelete(e, marker)}
+                >
+                  Delete
+                </Button>
+              )}
             </div>
           </InfoWindow>
         )}

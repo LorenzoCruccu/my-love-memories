@@ -37,6 +37,17 @@ export const markerRouter = createTRPCRouter({
 			});
 		}),
 
+		delete: protectedProcedure
+		.input(z.object({
+			id: z.number(), // Ensure the input includes the ID of the marker to delete
+		}))
+		.mutation(async ({ ctx, input }) => {
+			await ctx.db.marker.delete({
+				where: { id: input.id },
+			});
+			return { success: true };
+		}),
+
 	getLatest: protectedProcedure.query(async ({ ctx }) => {
 		const post = await ctx.db.post.findFirst({
 			orderBy: { createdAt: "desc" },

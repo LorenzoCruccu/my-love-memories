@@ -3,6 +3,8 @@ import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 import GoogleMapComponent from "./_components/map/map";
 import { Button } from "~/components/ui/button";
+import { Avatar, AvatarImage } from "~/components/ui/avatar";
+import { Separator } from "~/components/ui/separator";
 
 export default async function Home() {
   const session = await getServerAuthSession();
@@ -23,7 +25,19 @@ export default async function Home() {
           <div className="flex flex-col items-center gap-2">
             <div className="flex flex-col items-center justify-center gap-4">
               <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
+                {session && (
+                  <>
+                    <span className="flex gap-2">
+                      Logged in as
+                      {session?.user?.image && (
+                        <Avatar>
+                          <AvatarImage src={session?.user?.image} />
+                        </Avatar>
+                      )}
+                      {session.user?.name}
+                    </span>
+                  </>
+                )}
               </p>
               <Button
                 variant="default"
@@ -36,6 +50,7 @@ export default async function Home() {
                   {session ? "Sign out" : "Sign in"}
                 </Link>
               </Button>
+
             </div>
           </div>
 
