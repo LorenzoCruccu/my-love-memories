@@ -7,16 +7,16 @@ import {
   InfoWindow,
   Map,
   type MapMouseEvent,
-  Marker,
   Pin,
   useAdvancedMarkerRef,
+  Marker as MarkerGoogleMaps,
 } from "@vis.gl/react-google-maps";
 import { api } from "~/trpc/react";
-import { type Marker } from "@prisma/client";
 import ControlPanel from "./controlPanel";
 import { CustomMapControl } from "./mapControl";
 import MapHandler from "./map-handler";
-import { type LatLng } from "leaflet";
+import { CreateMarkerModal } from "./createMarkerModal";
+import { type Marker } from "@prisma/client";
 
 const center = {
   lat: 42.5,
@@ -30,44 +30,69 @@ const GoogleMapComponent = () => {
     useState<google.maps.places.PlaceResult | null>(null);
 
   // store clicked location
-  const [selectedLocation, setSelectedLocation] = useState({});
   // store show dialog state to add location
   const [showDialog, setShowDialog] = useState(false);
   // store dialog location
-  const [dialogLocation, setDialogLocation] = useState<LatLng | null>();
+  const [newMarkerLocation, setNewMarkerLocation] = useState<{
+    lat: number;
+    lng: number;
+    address?: string;
+  } | null>();
 
-  const handleMapClick = (mapProps: MapMouseEvent) => {
+
+
+  const handleMapClick = async (mapProps: MapMouseEvent) => {
     // checks if location clicked is valid
     if (mapProps?.detail.latLng) {
       const lat = mapProps.detail.latLng.lat;
       const lng = mapProps.detail.latLng.lng;
       setShowDialog(true);
-      setDialogLocation({ lat, lng });
-      setSelectedLocation({ lat, lng });
+      setNewMarkerLocation({ lat, lng });
+
+      searchAddress(lat,lng);
     } else {
       // show alert message
+			setShowDialog(false);
+			setNewMarkerLocation(null);
       alert("Please select the specific location");
     }
   };
 
-  // add location to show in a list
-  const onAddLocation = () => {
-    // Create a Google Maps Geocoder instance
-    const geocoder = new window.google.maps.Geocoder();
-
-    // Reverse geocode the coordinates to get the place name
-    void geocoder.geocode({ location: selectedLocation }, (results, status) => {
-      if (status === "OK") {
-        if (results[0]) {
-          console.log(results[0]);
-
-          setShowDialog(false);
-        }
-      } else {
-        console.error("Geocoder failed due to: " + status);
-      }
-    });
-  };
+	const searchAddress = (lat: number, lng: number) => {
+		// Create a Google Maps Geocoder instance
+		const geocoder = new window.google.maps.Geocoder();
+	
+		// Reverse geocode the coordinates to get the place name
+		void geocoder.geocode({ location: { lat, lng } }, (results, status) => {
+			if (status === google.maps.GeocoderStatus.OK) {
+				if (results?.[0]) {
+					console.log(results[0]);
+	
+					// Filter out plus_code type from address_components
+					const filteredAddressComponents = results[0].address_components.filter(
+						(component) => !component.types.includes("plus_code")
+					);
+	
+					// Rebuild the formatted address without the plus_code component
+					const formattedAddress = filteredAddressComponents
+						.map((component) => component.long_name)
+						.join(", ");
+	
+					console.log(formattedAddress);
+	
+					// Set the new marker location with the filtered address
+					setNewMarkerLocation({
+						lat: lat,
+						lng: lng,
+						address: formattedAddress,
+					});
+				}
+			} else {
+				console.error("Geocoder failed due to: " + status);
+			}
+		});
+	};
+	
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <Map
@@ -81,9 +106,24 @@ const GoogleMapComponent = () => {
       >
         {showDialog && (
           // displays a dialog to add clicked location
-          <InfoWindow position={dialogLocation}>ciao</InfoWindow>
+          <>
+            <InfoWindow
+              headerContent={<span className="font-bold">New marker </span>}
+              position={newMarkerLocation}
+              onClose={() => {
+                setShowDialog(false);
+                setNewMarkerLocation(null);
+              }}
+            >
+							<p>{newMarkerLocation?.address}</p>
+              <CreateMarkerModal />
+            </InfoWindow>
+            {/**
+             * TODO: make marker visible and precise
+             * <MarkerGoogleMaps position={newMarkerLocation} zIndex={10} />
+             */}{" "}
+          </>
         )}
-        <Marker position={dialogLocation} zIndex={999999999} />
 
         <CustomMapControl
           controlPosition={ControlPosition.TOP}

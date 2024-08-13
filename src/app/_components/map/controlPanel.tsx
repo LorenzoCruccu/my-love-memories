@@ -3,16 +3,16 @@ import * as React from 'react';
 function ControlPanel() {
   return (
     <div className="control-panel">
-      <h3>Basic Map</h3>
+      <h3>Info</h3>
       <p>
-        The simplest example possible, just rendering a google map with some
-        settings adjusted.
+
+paxxerell infos
       </p>
       <div className="links">
         <a
           href="https://codesandbox.io/s/github/visgl/react-google-maps/tree/main/examples/basic-map"
           target="_new">
-          Add spot
+          Flag this place
         </a>
       </div>
     </div>

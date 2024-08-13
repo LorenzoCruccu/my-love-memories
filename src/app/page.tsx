@@ -3,6 +3,7 @@ import { LatestPost } from "~/app/_components/post";
 import { getServerAuthSession } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 import dynamic from "next/dynamic";
+import { Button } from "~/components/ui/button";
 
 export default async function Home() {
   const allMarkers = await api.marker.getAllMarkers();
