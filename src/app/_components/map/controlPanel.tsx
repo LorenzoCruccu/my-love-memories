@@ -1,20 +1,23 @@
-import * as React from 'react';
+import { type Session } from "next-auth";
+import Link from "next/link";
+import * as React from "react";
+import { Button } from "~/components/ui/button";
 
-function ControlPanel() {
+function ControlPanel(session:Session) {
+
   return (
     <div className="control-panel">
       <h3>Info</h3>
-      <p>
-
-paxxerell infos
-      </p>
-      <div className="links">
-        <a
-          href="https://codesandbox.io/s/github/visgl/react-google-maps/tree/main/examples/basic-map"
-          target="_new">
-          Flag this place
-        </a>
-      </div>
+      <Link
+        href={session ? "/api/auth/signout" : "/api/auth/signin"}
+        className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
+      >
+        <Button variant={"outline"}>
+          {" "}
+          {session ? "Sign out" : "Sign in to add markers"}
+        </Button>
+      </Link>
+      <p></p>
     </div>
   );
 }
