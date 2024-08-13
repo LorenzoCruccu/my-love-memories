@@ -13,19 +13,18 @@ datasource db {
 
 model Marker {
   id            Int      @id @default(autoincrement())
-  name          String
   lat           Float
   lng           Float
   title         String
   description   String
-  intimacyLevel Int
+  intimacyLevel Int?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
 
-  @@index([name])
+  @@index([title])
 }
 
 model MarkerComments {

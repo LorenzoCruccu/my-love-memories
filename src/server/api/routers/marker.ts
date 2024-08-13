@@ -15,12 +15,23 @@ export const markerRouter = createTRPCRouter({
 	}),
 
 	create: protectedProcedure
-		.input(z.object({ name: z.string().min(1) }))
+		.input(z.object(
+			{
+				title: z.string().min(1),
+				description:z.string(),
+				lat: z.number(),
+				lng: z.number(),
+				intimacyLevel:z.number().nullable()
+
+			}))
 		.mutation(async ({ ctx, input }) => {
-			
-			return ctx.db.post.create({
+			return ctx.db.marker.create({
 				data: {
-					name: input.name,
+					title: input.title,
+					description: input.description,
+					lat:  input.lat,
+					lng: input.lng,
+					intimacyLevel:input.intimacyLevel,
 					createdBy: { connect: { id: ctx.session.user.id } },
 				},
 			});

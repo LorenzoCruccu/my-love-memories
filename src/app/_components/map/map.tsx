@@ -6,7 +6,8 @@ import {
   ControlPosition,
   InfoWindow,
   Map,
-  MapControl,
+  type MapMouseEvent,
+  Marker,
   Pin,
   useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
@@ -15,6 +16,7 @@ import { type Marker } from "@prisma/client";
 import ControlPanel from "./controlPanel";
 import { CustomMapControl } from "./mapControl";
 import MapHandler from "./map-handler";
+import { type LatLng } from "leaflet";
 
 const center = {
   lat: 42.5,
@@ -27,6 +29,45 @@ const GoogleMapComponent = () => {
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
 
+  // store clicked location
+  const [selectedLocation, setSelectedLocation] = useState({});
+  // store show dialog state to add location
+  const [showDialog, setShowDialog] = useState(false);
+  // store dialog location
+  const [dialogLocation, setDialogLocation] = useState<LatLng | null>();
+
+  const handleMapClick = (mapProps: MapMouseEvent) => {
+    // checks if location clicked is valid
+    if (mapProps?.detail.latLng) {
+      const lat = mapProps.detail.latLng.lat;
+      const lng = mapProps.detail.latLng.lng;
+      setShowDialog(true);
+      setDialogLocation({ lat, lng });
+      setSelectedLocation({ lat, lng });
+    } else {
+      // show alert message
+      alert("Please select the specific location");
+    }
+  };
+
+  // add location to show in a list
+  const onAddLocation = () => {
+    // Create a Google Maps Geocoder instance
+    const geocoder = new window.google.maps.Geocoder();
+
+    // Reverse geocode the coordinates to get the place name
+    void geocoder.geocode({ location: selectedLocation }, (results, status) => {
+      if (status === "OK") {
+        if (results[0]) {
+          console.log(results[0]);
+
+          setShowDialog(false);
+        }
+      } else {
+        console.error("Geocoder failed due to: " + status);
+      }
+    });
+  };
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       <Map
@@ -34,9 +75,16 @@ const GoogleMapComponent = () => {
         defaultCenter={center}
         defaultZoom={6}
         gestureHandling={"greedy"}
-        disableDefaultUI={false}
+        disableDefaultUI={true}
         mapId={"525423038a968bd5"}
+        onClick={(mapProps) => handleMapClick(mapProps)}
       >
+        {showDialog && (
+          // displays a dialog to add clicked location
+          <InfoWindow position={dialogLocation}>ciao</InfoWindow>
+        )}
+        <Marker position={dialogLocation} zIndex={999999999} />
+
         <CustomMapControl
           controlPosition={ControlPosition.TOP}
           onPlaceSelect={setSelectedPlace}
