@@ -16,6 +16,7 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
 import { useSession } from "next-auth/react";
+import { toast } from "sonner";
 
 // Define the props type
 type CreateMarkerModalProps = {
@@ -40,6 +41,7 @@ export function CreateMarkerModal({ newMarkerLocation, onMarkerCreated }: Create
     onSuccess: async () => {
       await utils.marker.invalidate();
       setOpen(false);
+			toast.success("You flagged this spot!")
 
       if (onMarkerCreated) {
         onMarkerCreated(); // Notify parent component

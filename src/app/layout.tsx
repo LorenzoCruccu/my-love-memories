@@ -11,6 +11,8 @@ import { type Metadata } from "next";
 import { TRPCReactProvider } from "~/trpc/react";
 import { cn } from "~/lib/utils";
 import NextAuthProvider from "~/providers/next-auth-provider";
+import { AlertDialogProvider } from "~/providers/alert-dialog-provider";
+import { Toaster } from "~/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Hide and Hit",
@@ -21,7 +23,6 @@ export const metadata: Metadata = {
 export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
       <body
@@ -31,7 +32,11 @@ export default async function RootLayout({
         )}
       >
         <TRPCReactProvider>
-          <NextAuthProvider>{children}</NextAuthProvider>
+          <NextAuthProvider>
+            <AlertDialogProvider>
+							<Toaster />
+							{children}</AlertDialogProvider>
+          </NextAuthProvider>
         </TRPCReactProvider>
       </body>
     </html>

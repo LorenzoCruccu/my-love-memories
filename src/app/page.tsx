@@ -4,12 +4,9 @@ import { api, HydrateClient } from "~/trpc/server";
 import GoogleMapComponent from "./_components/map/map";
 import { Button } from "~/components/ui/button";
 import { Avatar, AvatarImage } from "~/components/ui/avatar";
-import { Separator } from "~/components/ui/separator";
 
 export default async function Home() {
   const session = await getServerAuthSession();
-
-  void api.post.getLatest.prefetch();
 
   return (
     <HydrateClient>

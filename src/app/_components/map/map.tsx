@@ -18,6 +18,9 @@ import { CreateMarkerModal } from "./createMarkerModal";
 import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { Button } from "~/components/ui/button";
+import { useAlertDialog } from "~/providers/alert-dialog-provider";
+import { HiTrash } from "react-icons/hi";
+import { toast } from "sonner";
 
 const center = {
   lat: 42.5,
@@ -27,6 +30,7 @@ const center = {
 const GoogleMapComponent = () => {
   const [allMarkers] = api.marker.getAllMarkers.useSuspenseQuery();
   const { data: session } = useSession();
+  const { showAlertDialog } = useAlertDialog();
 
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
@@ -45,6 +49,7 @@ const GoogleMapComponent = () => {
   const deleteMarker = api.marker.delete.useMutation({
     onSuccess: async () => {
       await utils.marker.invalidate();
+			toast.success("You deleted this spot!")
     },
   });
 
@@ -54,11 +59,22 @@ const GoogleMapComponent = () => {
   ) => {
     console.log(marker);
     e.preventDefault();
-    if (marker.createdById == session?.user.id) {
-      deleteMarker.mutate({
-        id: marker.id,
-      });
-    }
+
+    showAlertDialog({
+      title: "Confirm Deletion",
+      description:
+        "Are you sure you want to delete this item? This action cannot be undone.",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onCancel: () => console.log("Deletion cancelled"),
+      onConfirm: () => {
+        if (marker.createdById == session?.user.id) {
+          deleteMarker.mutate({
+            id: marker.id,
+          });
+        }
+      },
+    });
   };
 
   const handleMarkerCreated = () => {
@@ -144,6 +160,7 @@ const GoogleMapComponent = () => {
         />
         {infoWindowShown && (
           <InfoWindow
+            className="min-w-36"
             anchor={markerInstance}
             onClose={handleClose}
             headerContent={
@@ -151,14 +168,25 @@ const GoogleMapComponent = () => {
             }
           >
             <div className="text-black">
-              <p>{marker.description}</p>
-              {marker.createdById == session?.user.id && (
-                <Button
-                  variant={"destructive"}
-                  onClick={(e) => handleDelete(e, marker)}
-                >
-                  Delete
-                </Button>
+              <p className="mb-4">{marker.description}</p>{" "}
+              {/* Add margin bottom for spacing */}
+              {marker.createdById === session?.user.id && (
+                <div className="flex justify-end gap-2">
+                      <Button
+                    variant={"outline"}
+                    className="mt-2"
+                    
+                  >
+                    Directions
+                  </Button>
+                  <Button
+                    variant={"destructive"}
+                    className="mt-2"
+                    onClick={(e) => handleDelete(e, marker)}
+                  >
+                    <HiTrash />
+                  </Button>
+                </div>
               )}
             </div>
           </InfoWindow>
