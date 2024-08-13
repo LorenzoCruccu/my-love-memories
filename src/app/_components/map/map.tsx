@@ -16,6 +16,7 @@ import { CustomMapControl } from "./mapControl";
 import MapHandler from "./map-handler";
 import { CreateMarkerModal } from "./createMarkerModal";
 import { type Marker } from "@prisma/client";
+import { useSession } from "next-auth/react";
 
 const center = {
   lat: 42.5,
@@ -24,6 +25,7 @@ const center = {
 
 const GoogleMapComponent = () => {
   const [allMarkers] = api.marker.getAllMarkers.useSuspenseQuery();
+  const { data: session } = useSession();
 
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
@@ -44,6 +46,7 @@ const GoogleMapComponent = () => {
   };
 
   const handleMapClick = async (mapProps: MapMouseEvent) => {
+    if (!session?.user.id) return;
     // checks if location clicked is valid
     if (mapProps?.detail.latLng) {
       const lat = mapProps.detail.latLng.lat;

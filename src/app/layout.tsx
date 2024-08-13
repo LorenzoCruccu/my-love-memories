@@ -1,15 +1,16 @@
 import "~/styles/globals.css";
-import { Inter as FontSans } from "next/font/google"
+import { Inter as FontSans } from "next/font/google";
 
 const fontSans = FontSans({
   subsets: ["latin"],
   variable: "--font-sans",
-})
+});
 import { GeistSans } from "geist/font/sans";
 import { type Metadata } from "next";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { cn } from "~/lib/utils";
+import NextAuthProvider from "~/providers/next-auth-provider";
 
 export const metadata: Metadata = {
   title: "Hide and Hit",
@@ -17,17 +18,21 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
+
   return (
     <html lang="en" className={`${GeistSans.variable}`}>
-       <body     className={cn(
-          "min-h-screen bg-background font-sans antialiased",
-          fontSans.variable
+      <body
+        className={cn(
+          "bg-background min-h-screen font-sans antialiased",
+          fontSans.variable,
         )}
       >
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>
+          <NextAuthProvider>{children}</NextAuthProvider>
+        </TRPCReactProvider>
       </body>
     </html>
   );
