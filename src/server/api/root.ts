@@ -1,6 +1,7 @@
 import { postRouter } from "~/server/api/routers/post";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { markerRouter } from "./routers/marker";
+import { markerCommentRouter } from "./routers/marker-comment";
 
 /**
  * This is the primary router for your server.
@@ -9,7 +10,8 @@ import { markerRouter } from "./routers/marker";
  */
 export const appRouter = createTRPCRouter({
   post: postRouter,
-	marker:markerRouter
+	marker:markerRouter,
+	markerComment:markerCommentRouter
 });
 
 // export type definition of API

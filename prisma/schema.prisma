@@ -24,12 +24,21 @@ model Marker {
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
 
+  MarkerComment MarkerComment[]
+
   @@index([title])
 }
 
-model MarkerComments {
-  id          Int    @id @default(autoincrement())
-  text        String
+model MarkerComment {
+  id   Int    @id @default(autoincrement())
+  text String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  marker   Marker @relation(fields: [markerId], references: [id])
+  markerId Int
+
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
 }
@@ -84,8 +93,8 @@ model User {
   sessions      Session[]
   posts         Post[]
 
-  Marker         Marker[]
-  MarkerComments MarkerComments[]
+  Marker        Marker[]
+  MarkerComment MarkerComment[]
 }
 
 model VerificationToken {
