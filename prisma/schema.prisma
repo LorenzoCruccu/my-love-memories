@@ -30,8 +30,8 @@ model Marker {
 }
 
 model MarkerComment {
-  id   Int    @id @default(autoincrement())
-  text String
+  id        Int    @id @default(autoincrement())
+  text      String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -41,6 +41,20 @@ model MarkerComment {
 
   createdBy   User   @relation(fields: [createdById], references: [id])
   createdById String
+
+  CommentLike CommentLike[]
+}
+
+model CommentLike {
+  id        Int      @id @default(autoincrement())
+  commentId Int
+  userId    String
+  comment   MarkerComment @relation(fields: [commentId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([commentId, userId])
 }
 
 model Post {
@@ -95,6 +109,8 @@ model User {
 
   Marker        Marker[]
   MarkerComment MarkerComment[]
+
+  CommentLike CommentLike[]
 }
 
 model VerificationToken {
