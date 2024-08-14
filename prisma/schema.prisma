@@ -15,6 +15,7 @@ model Marker {
   id            Int      @id @default(autoincrement())
   lat           Float
   lng           Float
+	address				String
   title         String
   description   String
   intimacyLevel Int?

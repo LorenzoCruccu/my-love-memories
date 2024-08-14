@@ -21,6 +21,7 @@ export const markerRouter = createTRPCRouter({
 				description:z.string(),
 				lat: z.number(),
 				lng: z.number(),
+				address:z.string(),
 				intimacyLevel:z.number().nullable()
 
 			}))
@@ -31,6 +32,7 @@ export const markerRouter = createTRPCRouter({
 					description: input.description,
 					lat:  input.lat,
 					lng: input.lng,
+					address:input.address,
 					intimacyLevel:input.intimacyLevel,
 					createdBy: { connect: { id: ctx.session.user.id } },
 				},

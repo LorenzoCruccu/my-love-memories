@@ -58,6 +58,7 @@ export function CreateMarkerModal({ newMarkerLocation, onMarkerCreated }: Create
         description,
         lat: newMarkerLocation.lat,
         lng: newMarkerLocation.lng,
+				address:newMarkerLocation.address!,
         intimacyLevel: 1,
       });
     }

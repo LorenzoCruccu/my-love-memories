@@ -1,7 +1,7 @@
 import React from "react";
 import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { HiTrash } from "react-icons/hi";
+import { HiTrash, HiLocationMarker } from "react-icons/hi";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -14,6 +14,7 @@ import {
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
 import { api } from "~/trpc/react";
 import MarkerComments from "./marker-comments";
+import { FaDirections } from "react-icons/fa";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
@@ -42,7 +43,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const handleDelete = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    marker: Marker,
+    marker: Marker
   ) => {
     e.preventDefault();
 
@@ -63,16 +64,29 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
     });
   };
 
+  const handleGetDirections = () => {
+    const googleMapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${marker.lat},${marker.lng}&travelmode=driving`;
+    window.open(googleMapsUrl, "_blank");
+  };
+
   return (
     <Sheet open={trigger} onOpenChange={onCancel}>
       <SheetContent side={"bottom"} className="pb-4">
         <SheetHeader>
+          <div className="mt-2 flex items-center text-sm text-gray-700">
+            <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
+            <span className="pr-2 font-medium">{marker?.address}</span>
+            <Button variant={"outline"} onClick={handleGetDirections}>
+              <FaDirections />
+              <span className="pl-1">Directions</span>
+            </Button>
+          </div>
           <SheetTitle className="text-xl font-bold">{marker.title}</SheetTitle>
+
           <SheetDescription className="mt-2 text-sm text-gray-500">
             {marker.description}
           </SheetDescription>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button variant={"outline"}>Directions</Button>
+          <div className="mt-4 flex justify-end gap-2">
             {marker.createdById === session?.user.id && (
               <Button
                 variant={"destructive"}

@@ -51,6 +51,7 @@ const GoogleMapComponent = () => {
   const handleMapClick = async (mapProps: MapMouseEvent) => {
     if (!session?.user.id) {
       toast.error("You must be logged in to put a flag!");
+			return;
     }
     // checks if location clicked is valid
     if (mapProps?.detail.latLng) {
