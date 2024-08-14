@@ -49,7 +49,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
     showAlertDialog({
       title: "Confirm Deletion",
       description:
-        "Are you sure you want to delete this item? This action cannot be undone.",
+        "Are you sure you want to delete this marker? This action cannot be undone.",
       confirmText: "Delete",
       cancelText: "Cancel",
       onCancel: () => console.log("Deletion cancelled"),
