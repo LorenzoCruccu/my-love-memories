@@ -8,8 +8,6 @@ import {
   type MapMouseEvent,
   Pin,
   useAdvancedMarkerRef,
-  Marker as MarkerGoogleMaps,
-  useMap,
 } from "@vis.gl/react-google-maps";
 import { api } from "~/trpc/react";
 import MapHandler from "./map-handler";
@@ -175,22 +173,28 @@ const GoogleMapComponent = () => {
   return (
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       {isLoading && (
-        <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center from-[#2e026d] to-[#15162c] text-white">
+        <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-b from-[#D3B1C2] to-[#613659] text-white">
           <div className="loader">
             <Image
               className="h-full w-auto object-contain"
               src={"/static/hide-and-hit.png"}
-              alt={
-                "Immagine che rappresenta:" + " nessun problema di connessione"
-              }
+              alt={"logo hide and hit"}
               sizes="auto"
-              height={300}
-              width={300}
+              height={500}
+              width={500}
             />
-            loading...
+            <span className="mt-4 flex justify-center">
+              loading places
+              <span className="ml-1">
+                <span className="animate-dot-blink-1">.</span>
+                <span className="animate-dot-blink-2">.</span>
+                <span className="animate-dot-blink-3">.</span>
+              </span>
+            </span>
           </div>
         </div>
       )}
+
       <Map
         style={{ width: "100%", height: "100vh" }}
         defaultCenter={center}

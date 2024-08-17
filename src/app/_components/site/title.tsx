@@ -13,7 +13,6 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "~/components/ui/accordion";
-import { Info } from "lucide-react";
 import Image from "next/image";
 
 const Title: React.FC = () => {
@@ -36,7 +35,7 @@ const Title: React.FC = () => {
         <Image
           className="w-12 h-12 object-contain"
           src={"/static/hide-and-hit-logo.png"}
-          alt={"Immagine che rappresenta:" + " nessun problema di connessione"}
+          alt={"logo hide and hit"}
           sizes="auto"
           height={48}
           width={48}
