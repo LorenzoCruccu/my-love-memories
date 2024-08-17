@@ -27,7 +27,7 @@ function ControlPanel({ onAdd, onTrophyClick }: ControlPanelProps) {
     <div className="control-panel space-y-4 rounded-lg p-4 shadow-lg">
       <Button
         onClick={onAdd}
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-purple-600 px-4 py-2 text-white transition duration-300 ease-in-out hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-400"
+        className="flex h-12 w-12 items-center justify-center rounded-full bg-purple hover:bg-lightPurple px-4 py-2 text-white transition duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-purple-400"
       >
         <FaPlus size={24} />
       </Button>

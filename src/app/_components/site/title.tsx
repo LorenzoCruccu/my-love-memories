@@ -27,20 +27,22 @@ const Title: React.FC = () => {
   };
 
   return (
-    <div className="site-title absolute bottom-0 left-1/2 flex -translate-x-1/2 transform cursor-pointer items-center justify-center space-x-4">
+    <div className="absolute left-0 top-0 mt-2 flex transform items-center justify-center p-2 space-x-3 cursor-pointer">
       <Badge
-        className="flex items-center rounded-full bg-purple-600 px-6 py-3 focus:bg-purple-700"
+        className="flex items-center rounded-full bg-purple hover:bg-lightPurple p-2 focus:bg-purple-700 sm:px-4 sm:py-2"
         onClick={handleOpenDialog}
       >
         <Image
-          className="w-12 h-12 object-contain"
+          className="h-6 w-6 object-contain sm:h-8 sm:w-8"
           src={"/static/hide-and-hit-logo.png"}
           alt={"logo hide and hit"}
           sizes="auto"
-          height={48}
-          width={48}
+          height={32}
+          width={32}
         />
-        <span className="text-2xl font-bold text-white">Hide and Hit</span>
+        <span className="ml-2 text-base font-bold text-white sm:ml-3 sm:text-lg">
+          Hide and Hit
+        </span>
       </Badge>
 
       {/* Dialog for displaying site info */}

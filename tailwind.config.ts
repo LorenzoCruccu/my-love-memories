@@ -19,6 +19,12 @@ const config = {
 			},
 		},
 		extend: {
+			colors: {
+        deepPurple: '#2E073F', // Deep Purple
+        purple: '#7A1CAC',      // Purple
+        lightPurple: '#AD49E1', // Light Purple
+        lavender: '#EBD3F8',    // Lavender
+      },
 			fontFamily: {
 				sans: ["var(--font-sans)", ...fontFamily.sans],
 			},
