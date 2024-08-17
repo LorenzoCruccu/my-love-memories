@@ -1,25 +1,27 @@
 "use client";
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState } from "react";
 import {
   APIProvider,
   AdvancedMarker,
-  ControlPosition,
   InfoWindow,
   Map,
   type MapMouseEvent,
   Pin,
   useAdvancedMarkerRef,
   Marker as MarkerGoogleMaps,
+  useMap,
 } from "@vis.gl/react-google-maps";
 import { api } from "~/trpc/react";
 import MapHandler from "./map-handler";
 import { CreateMarkerModal } from "./marker/createMarkerModal";
 import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
-import { Button } from "~/components/ui/button";
-import { HiTrash } from "react-icons/hi";
+import Image from "next/image";
+
 import { toast } from "sonner";
 import MarkerDetailsSheet from "./marker/marker-details-sheet";
+import ControlPanel from "./controlPanel";
+import Title from "../site/title";
 
 const center = {
   lat: 42.5,
@@ -40,7 +42,13 @@ const GoogleMapComponent = () => {
     address?: string;
   } | null>(null);
 
+  const [userCanAdd, setUserCanAdd] = useState<boolean>(false);
+
   const [isLoading, setIsLoading] = useState(true); // Loading state for the map
+
+  const handleTrophyClick = () => {
+    console.log("trophy icon clicked");
+  };
 
   const handleMarkerCreated = () => {
     setShowDialog(false);
@@ -48,10 +56,24 @@ const GoogleMapComponent = () => {
     console.log("Marker has been successfully created!");
   };
 
+  const handleAdd = () => {
+    console.log("Add button clicked!");
+    setUserCanAdd(!userCanAdd);
+
+    const message = !userCanAdd
+      ? "Click anywhere to add a marker"
+      : "Drag mode enabled";
+    toast.success(message);
+    // Add your logic here
+  };
+
   const handleMapClick = async (mapProps: MapMouseEvent) => {
     if (!session?.user.id) {
       toast.error("You must be logged in to put a flag!");
-			return;
+      return;
+    }
+    if (!userCanAdd) {
+      return;
     }
     // checks if location clicked is valid
     if (mapProps?.detail.latLng) {
@@ -134,7 +156,9 @@ const GoogleMapComponent = () => {
                 marker={marker}
                 confirmText="Delete"
                 cancelText="Cancel"
-								onCancel={()=>{setInfoWindowShown(false)}}
+                onCancel={() => {
+                  setInfoWindowShown(false);
+                }}
               />
             </div>
           </>
@@ -152,7 +176,19 @@ const GoogleMapComponent = () => {
     <APIProvider apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
       {isLoading && (
         <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center from-[#2e026d] to-[#15162c] text-white">
-          <div className="loader">loading...</div>
+          <div className="loader">
+            <Image
+              className="h-full w-auto object-contain"
+              src={"/static/hide-and-hit.png"}
+              alt={
+                "Immagine che rappresenta:" + " nessun problema di connessione"
+              }
+              sizes="auto"
+              height={300}
+              width={300}
+            />
+            loading...
+          </div>
         </div>
       )}
       <Map
@@ -189,11 +225,11 @@ const GoogleMapComponent = () => {
           controlPosition={ControlPosition.TOP}
           onPlaceSelect={setSelectedPlace}
         />
-	*/}
+				*/}
 
         <MapHandler place={selectedPlace} />
-
-        {/** <ControlPanel session={session} />*/}
+        <Title />
+        <ControlPanel onAdd={handleAdd} onTrophyClick={handleTrophyClick} />
 
         {allMarkers.map((_marker) => (
           <MarkerWithInfoWindow key={_marker.id} marker={_marker} />
