@@ -156,7 +156,7 @@ const GoogleMapComponent = () => {
         </div>
       )}
       <Map
-        style={{ width: "100%", height: "700px" }}
+        style={{ width: "100%", height: "100vh" }}
         defaultCenter={center}
         defaultZoom={6}
         gestureHandling={"greedy"}
@@ -182,10 +182,6 @@ const GoogleMapComponent = () => {
                 onMarkerCreated={handleMarkerCreated}
               />
             </InfoWindow>
-            {/**
-             * TODO: make marker visible and precise
-             * <MarkerGoogleMaps position={newMarkerLocation} zIndex={10} />
-             */}{" "}
           </>
         )}
         {/*
