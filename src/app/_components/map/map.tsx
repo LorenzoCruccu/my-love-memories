@@ -9,10 +9,9 @@ import {
   Pin,
   useAdvancedMarkerRef,
 } from "@vis.gl/react-google-maps";
-import { api } from "~/trpc/react";
+import { type MarkerWithVisitStatus, api } from "~/trpc/react";
 import MapHandler from "./map-handler";
 import { CreateMarkerModal } from "./marker/createMarkerModal";
-import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
 
@@ -124,9 +123,7 @@ const GoogleMapComponent = () => {
   };
 
   const MarkerWithInfoWindow: React.FC<{
-    marker: Marker & {
-      visitedByCurrentUser: boolean;
-    };
+    marker: MarkerWithVisitStatus;
   }> = ({ marker }) => {
     const [markerRef, markerInstance] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState(false);

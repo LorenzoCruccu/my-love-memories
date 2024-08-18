@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { HiTrash, HiLocationMarker } from "react-icons/hi";
@@ -11,15 +11,16 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
-import { api } from "~/trpc/react";
+import { type MarkerWithVisitStatus, api } from "~/trpc/react";
 import MarkerComments from "./marker-comments";
 import { FaDirections, FaCheck } from "react-icons/fa";
 import { TbTargetArrow } from "react-icons/tb";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
-  marker: Marker & { visitedByCurrentUser:boolean};
+  marker: MarkerWithVisitStatus;
   onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: string;
@@ -34,14 +35,23 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const { data: session } = useSession();
   const utils = api.useUtils();
   const { showAlertDialog } = useAlertDialog();
+  const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
+  const [comment, setComment] = useState("");
 
-
-  // Mutation to toggle visit status
   const toggleVisit = api.markerVisit.toggleVisit.useMutation({
     onSuccess: async () => {
-			const message = marker.visitedByCurrentUser ? "Back in time!" : "Good job!"
+      const message = marker.visitedByCurrentUser ? "Back in time!" : "Good job!";
       toast.success(message);
+			await utils.marker.invalidate()
       await utils.markerVisit.invalidate();
+      await utils.markerComment.invalidate(); // Invalidate comments to update the list with the new comment
+    },
+  });
+
+  const addComment = api.markerComment.create.useMutation({
+    onSuccess: async () => {
+      toggleVisit.mutate({ markerId: marker.id }); // Toggle the visit status after the comment is added
+      setIsCommentModalOpen(false); // Close the modal after success
     },
   });
 
@@ -54,7 +64,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const handleDelete = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    marker: Marker,
+    marker: Marker
   ) => {
     e.preventDefault();
 
@@ -81,7 +91,22 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   };
 
   const handleToggleVisit = () => {
-    toggleVisit.mutate({ markerId: marker.id });
+    if (marker.visitedByCurrentUser) {
+      // Toggle visit directly if already visited
+      toggleVisit.mutate({ markerId: marker.id });
+    } else {
+      // Open the comment modal if not visited
+      setIsCommentModalOpen(true);
+    }
+  };
+
+  const handleCommentSubmit = () => {
+    if (comment.trim() === "") {
+      toast.error("Comment cannot be empty!");
+      return;
+    }
+    // Add comment and toggle visit
+    addComment.mutate({ markerId: marker.id, text: comment });
   };
 
   return (
@@ -134,11 +159,28 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           </div>
         </SheetHeader>
         <div className="mt-6">
-					
           <MarkerComments markerId={marker.id} />
-					
         </div>
       </SheetContent>
+
+      {/* Comment Modal */}
+      <Dialog open={isCommentModalOpen} onOpenChange={setIsCommentModalOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Add a Comment</DialogTitle>
+          </DialogHeader>
+          <textarea
+            className="w-full rounded-md border border-gray-300 p-2"
+            rows={4}
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            placeholder="Share your experience about this marker..."
+          />
+          <div className="mt-4 flex justify-end">
+            <Button onClick={handleCommentSubmit}>Submit</Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Sheet>
   );
 };
