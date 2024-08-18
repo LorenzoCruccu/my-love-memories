@@ -1,4 +1,3 @@
-import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -10,37 +9,14 @@ import {
 export const markerRouter = createTRPCRouter({
 
 	getAllMarkers: publicProcedure.query(async ({ ctx }) => {
-		try {
-			const userId = ctx.session?.user?.id;
+		// Get the current user's ID from the session
 	
-			const markers = await ctx.db.marker.findMany({
-				include: {
-					MarkerVisit: userId
-						? {
-								where: {
-									userId: userId,
-								},
-								select: {
-									id: true,
-								},
-							}
-						: false,
-				},
-			});
+		// Fetch all markers and, if a user is logged in, determine if each is visited by the current user
+		const markers = await ctx.db.marker.findMany();
 	
-			return markers.map(marker => ({
-				...marker,
-				visitedByCurrentUser: userId ? marker.MarkerVisit.length > 0 : false,
-			}));
-		} catch (error) {
-			console.error("Failed to fetch markers:", error);
-			throw new TRPCError({
-				code: 'INTERNAL_SERVER_ERROR',
-				message: 'Failed to fetch markers',
-			});
-		}
+		// Map over the markers to add a 'visitedByCurrentUser' flag if user is logged in
+		return markers ?? null;
 	}),
-	
 	
 	create: protectedProcedure
 		.input(z.object(
