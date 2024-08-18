@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 import { HiPaperAirplane, HiTrash, HiThumbUp } from "react-icons/hi";
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
+import { Skeleton } from "~/components/ui/skeleton"; // Assuming you have a Skeleton component
 
 type MarkerCommentsProps = {
   markerId: number;
@@ -16,11 +17,15 @@ type MarkerCommentsProps = {
 
 const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
   const { data: session } = useSession();
-  const [comments] = api.markerComment.getCommentsFromMarkerId.useSuspenseQuery({ markerId });
+  const { data: comments, isPending } = api.markerComment.getCommentsFromMarkerId.useQuery(
+    { markerId },
+  );
   const utils = api.useUtils();
   const { showAlertDialog } = useAlertDialog();
 
-  const [processingCommentId, setProcessingCommentId] = useState<number | null>(null);
+  const [processingCommentId, setProcessingCommentId] = useState<number | null>(
+    null,
+  );
 
   const createComment = api.markerComment.create.useMutation({
     onSuccess: async () => {
@@ -89,7 +94,22 @@ const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
       <h3 className="mt-4 text-lg font-bold">Comments</h3>
       <Separator className="my-2" />
       <ScrollArea className="h-44">
-        {comments && comments.length > 0 ? (
+        {isPending ? (
+          <div>
+            {[...Array<number>(3)].map((_, index) => (
+              <div key={index} className="flex flex-col py-4">
+                <div className="flex items-start gap-4">
+                  <Skeleton className="h-10 w-10 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="h-4 w-1/3 rounded" />
+                    <Skeleton className="h-4 w-full rounded" />
+                    <Skeleton className="h-4 w-1/2 rounded" />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : comments && comments.length > 0 ? (
           comments.map((comment) => (
             <div key={comment.id} className="flex flex-col py-4">
               <div className="flex items-start gap-4">
@@ -103,13 +123,13 @@ const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1">
-                  <div className="flex justify-between items-center">
+                  <div className="flex items-center justify-between">
                     <p className="text-sm font-semibold">
                       {comment.createdBy.name}
                     </p>
                     {comment.createdById === session?.user?.id && (
                       <button
-                        className="text-red-500 hover:text-red-700 pr-6"
+                        className="pr-6 text-red-500 hover:text-red-700"
                         onClick={() => handleDeleteComment(comment.id)}
                         aria-label="Delete comment"
                       >
@@ -128,10 +148,10 @@ const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
                       disabled={processingCommentId === comment.id} // Disable the button while processing
                     >
                       {processingCommentId === comment.id ? (
-                        <div className="loader h-5 w-5 border-2 border-t-2 border-purple-600 border-t-transparent rounded-full animate-spin"></div>
+                        <div className="loader border-purple-600 h-5 w-5 animate-spin rounded-full border-2 border-t-2 border-t-transparent"></div>
                       ) : (
                         <span className="flex text-sm">
-                          <HiThumbUp className="h-5 w-5 mr-1" />
+                          <HiThumbUp className="mr-1 h-5 w-5" />
                           {comment.likeCount}
                         </span>
                       )}
@@ -170,7 +190,7 @@ const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
               disabled={createComment.isPending}
             >
               {createComment.isPending ? (
-                <div className="loader h-5 w-5 border-2 border-t-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                <div className="loader h-5 w-5 animate-spin rounded-full border-2 border-t-2 border-blue-600 border-t-transparent"></div>
               ) : (
                 <HiPaperAirplane className="h-5 w-5" />
               )}

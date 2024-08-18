@@ -123,7 +123,11 @@ const GoogleMapComponent = () => {
     });
   };
 
-  const MarkerWithInfoWindow: React.FC<{ marker: Marker }> = ({ marker }) => {
+  const MarkerWithInfoWindow: React.FC<{
+    marker: Marker & {
+      visitedByCurrentUser: boolean;
+    };
+  }> = ({ marker }) => {
     const [markerRef, markerInstance] = useAdvancedMarkerRef();
     const [infoWindowShown, setInfoWindowShown] = useState(false);
 
@@ -141,11 +145,20 @@ const GoogleMapComponent = () => {
         position={{ lat: marker.lat, lng: marker.lng }}
         onClick={handleMarkerClick}
       >
-        <Pin
-          background={"#0f9d58"}
-          borderColor={"#006425"}
-          glyphColor={"#60d98f"}
-        />
+        {marker.visitedByCurrentUser ? (
+          <Pin
+            background={"#AD49E1"} // lightPurple
+            borderColor={"#7A1CAC"} // purple
+            glyphColor={"#EBD3F8"} // lavender
+          />
+        ) : (
+          <Pin
+            background={"#D3D3D3"} // grey (for unvisited markers)
+            borderColor={"#A9A9A9"} // dark grey (border for unvisited markers)
+            glyphColor={"#696969"} // dim grey (glyph color for unvisited markers)
+          />
+        )}
+
         {infoWindowShown && (
           <>
             <div>
