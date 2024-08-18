@@ -26,6 +26,7 @@ model Marker {
   createdById String
 
   MarkerComment MarkerComment[]
+  MarkerVisit   MarkerVisit[] // Relation to track visits
 
   @@index([title])
 }
@@ -56,6 +57,17 @@ model CommentLike {
   updatedAt DateTime @updatedAt
 
   @@unique([commentId, userId])
+}
+
+model MarkerVisit {
+  id        Int      @id @default(autoincrement())
+  markerId  Int
+  userId    String
+  visitedAt DateTime @default(now()) // Automatically records the time of the visit
+  marker    Marker   @relation(fields: [markerId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@unique([markerId, userId]) // Ensures a user can mark a marker as visited only once
 }
 
 model Post {
@@ -110,8 +122,8 @@ model User {
 
   Marker        Marker[]
   MarkerComment MarkerComment[]
-
-  CommentLike CommentLike[]
+  CommentLike   CommentLike[]
+  MarkerVisit   MarkerVisit[]
 }
 
 model VerificationToken {

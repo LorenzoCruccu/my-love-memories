@@ -14,7 +14,8 @@ import {
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
 import { api } from "~/trpc/react";
 import MarkerComments from "./marker-comments";
-import { FaDirections } from "react-icons/fa";
+import { FaDirections, FaCheck } from "react-icons/fa";
+import { TbTargetArrow } from "react-icons/tb";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
@@ -34,6 +35,19 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const utils = api.useUtils();
   const { showAlertDialog } = useAlertDialog();
 
+  const { data: isVisited } = api.markerVisit.isVisited.useQuery({
+    markerId: marker.id,
+  });
+
+  // Mutation to toggle visit status
+  const toggleVisit = api.markerVisit.toggleVisit.useMutation({
+    onSuccess: async () => {
+			const message = isVisited ? "Back in time!" : "Good job!"
+      toast.success(message);
+      await utils.markerVisit.invalidate();
+    },
+  });
+
   const deleteMarker = api.marker.delete.useMutation({
     onSuccess: async () => {
       await utils.marker.invalidate();
@@ -43,7 +57,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const handleDelete = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    marker: Marker
+    marker: Marker,
   ) => {
     e.preventDefault();
 
@@ -69,24 +83,49 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
     window.open(googleMapsUrl, "_blank");
   };
 
+  const handleToggleVisit = () => {
+    toggleVisit.mutate({ markerId: marker.id });
+  };
+
   return (
     <Sheet open={trigger} onOpenChange={onCancel}>
-      <SheetContent side={"bottom"} className="pb-4">
+      <SheetContent side={"bottom"} className="pb-4 sm:p-6">
         <SheetHeader>
           <div className="mt-2 flex items-center text-sm text-gray-700">
             <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
             <span className="pr-2 font-medium">{marker?.address}</span>
-            <Button variant={"outline"} onClick={handleGetDirections}>
-              <FaDirections />
-              <span className="pl-1">Directions</span>
-            </Button>
           </div>
-          <SheetTitle className="text-xl font-bold">{marker.title}</SheetTitle>
+          <SheetTitle className="mt-4 text-lg font-bold sm:text-xl">
+            {marker.title}
+          </SheetTitle>
 
           <SheetDescription className="mt-2 text-sm text-gray-500">
             {marker.description}
           </SheetDescription>
-          <div className="mt-4 flex justify-end gap-2">
+
+          <div className="mt-6 flex justify-end gap-2">
+            <Button variant={"outline"} onClick={handleGetDirections}>
+              <FaDirections />
+              <span className="pl-1">Directions</span>
+            </Button>
+
+            {session && (
+              <Button
+                variant={isVisited ? "outline" : "default"}
+                onClick={handleToggleVisit}
+              >
+                {isVisited ? (
+                  <>
+                    <FaCheck className="mr-1" /> Visited
+                  </>
+                ) : (
+                  <>
+                    <TbTargetArrow className="mr-1" /> HIT this marker!
+                  </>
+                )}
+              </Button>
+            )}
+
             {marker.createdById === session?.user.id && (
               <Button
                 variant={"destructive"}

@@ -88,7 +88,7 @@ const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
     <div>
       <h3 className="mt-4 text-lg font-bold">Comments</h3>
       <Separator className="my-2" />
-      <ScrollArea className="h-32">
+      <ScrollArea className="h-44">
         {comments && comments.length > 0 ? (
           comments.map((comment) => (
             <div key={comment.id} className="flex flex-col py-4">

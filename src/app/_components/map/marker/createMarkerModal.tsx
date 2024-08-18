@@ -15,7 +15,6 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Textarea } from "~/components/ui/textarea";
-import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 
 // Define the props type
@@ -67,7 +66,7 @@ export function CreateMarkerModal({ newMarkerLocation, onMarkerCreated }: Create
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild className="flex w-full items-center justify-center">
-        <Button variant="outline">Flag this place</Button>
+        <Button variant="default">Flag this place</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[525px]">
         <DialogHeader>
