@@ -29,6 +29,12 @@ export const api = createTRPCReact<AppRouter>();
  */
 export type RouterInputs = inferRouterInputs<AppRouter>;
 
+
+//custom
+export type GetAllMarkersOutput = RouterOutputs['marker']['getAllMarkers']
+
+
+
 /**
  * Inference helper for outputs.
  *

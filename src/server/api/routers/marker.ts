@@ -69,17 +69,4 @@ export const markerRouter = createTRPCRouter({
 			return { success: true };
 		}),
 
-	getLatest: protectedProcedure.query(async ({ ctx }) => {
-		const post = await ctx.db.post.findFirst({
-			orderBy: { createdAt: "desc" },
-			where: { createdBy: { id: ctx.session.user.id } },
-		});
-
-		return post ?? null;
-	}),
-
-	getSecretMessage: protectedProcedure.query(() => {
-		
-		return "you can now see this secret message!";
-	}),
 });

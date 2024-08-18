@@ -19,7 +19,7 @@ import { TbTargetArrow } from "react-icons/tb";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
-  marker: Marker;
+  marker: Marker & { visitedByCurrentUser:boolean};
   onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: string;
@@ -35,14 +35,11 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const utils = api.useUtils();
   const { showAlertDialog } = useAlertDialog();
 
-  const { data: isVisited } = api.markerVisit.isVisited.useQuery({
-    markerId: marker.id,
-  });
 
   // Mutation to toggle visit status
   const toggleVisit = api.markerVisit.toggleVisit.useMutation({
     onSuccess: async () => {
-			const message = isVisited ? "Back in time!" : "Good job!"
+			const message = marker.visitedByCurrentUser ? "Back in time!" : "Good job!"
       toast.success(message);
       await utils.markerVisit.invalidate();
     },
@@ -111,10 +108,10 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
             {session && (
               <Button
-                variant={isVisited ? "outline" : "default"}
+                variant={marker.visitedByCurrentUser ? "outline" : "default"}
                 onClick={handleToggleVisit}
               >
-                {isVisited ? (
+                {marker.visitedByCurrentUser ? (
                   <>
                     <FaCheck className="mr-1" /> Visited
                   </>
