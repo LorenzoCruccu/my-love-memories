@@ -11,16 +11,30 @@ import {
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "~/components/ui/dialog";
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
 import { type MarkerWithVisitStatus, api } from "~/trpc/react";
 import MarkerComments from "./marker-comments";
 import { FaDirections, FaCheck } from "react-icons/fa";
 import { TbTargetArrow } from "react-icons/tb";
+import Image from "next/image";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "~/components/ui/carousel"; // Assuming you have a carousel component in shadcn
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
   marker: MarkerWithVisitStatus;
+  photoUrls: string[];
   onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: string;
@@ -31,18 +45,22 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   trigger,
   marker,
   onCancel,
+  photoUrls,
 }) => {
   const { data: session } = useSession();
   const utils = api.useUtils();
   const { showAlertDialog } = useAlertDialog();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [comment, setComment] = useState("");
+	
 
   const toggleVisit = api.markerVisit.toggleVisit.useMutation({
     onSuccess: async () => {
-      const message = marker.visitedByCurrentUser ? "Back in time!" : "Good job!";
+      const message = marker.visitedByCurrentUser
+        ? "Back in time!"
+        : "Good job!";
       toast.success(message);
-			await utils.marker.invalidate()
+      await utils.marker.invalidate();
       await utils.markerVisit.invalidate();
       await utils.markerComment.invalidate(); // Invalidate comments to update the list with the new comment
     },
@@ -61,10 +79,11 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
       toast.success("You deleted this spot!");
     },
   });
+	
 
   const handleDelete = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    marker: Marker
+    marker: Marker,
   ) => {
     e.preventDefault();
 
@@ -124,7 +143,39 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           <SheetDescription className="mt-2 text-sm text-gray-500">
             {marker.description}
           </SheetDescription>
+          {photoUrls.length > 0 && (
+            <div className="mt-4 flex justify-center">
+              <Carousel
+                className="w-full max-w-2xl"
+                opts={{
+                  align: "start",
+                  loop: true,
+                }}
 
+              >
+                <CarouselContent className="-ml-1 flex">
+                  {photoUrls.map((photoUrl: string, index: number) => (
+                    <CarouselItem
+                      key={index}
+                      className="flex w-full justify-center" // Center the item horizontally
+                    >
+                      <div className="p-1">
+                        <Image
+                          src={photoUrl}
+                          alt="Location"
+                          className="mx-auto h-80 w-full max-w-md rounded-lg object-cover" // Set height and ensure the image is responsive
+                          width={800}
+                          height={600}
+                        />
+                      </div>
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious />
+                <CarouselNext />
+              </Carousel>
+            </div>
+          )}
           <div className="mt-6 flex justify-end gap-2">
             <Button variant={"outline"} onClick={handleGetDirections}>
               <FaDirections />

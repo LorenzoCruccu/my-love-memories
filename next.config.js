@@ -6,6 +6,16 @@ await import("./src/env.js");
 
 /** @type {import("next").NextConfig} */
 const config = {
+	images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'maps.googleapis.com',
+        port: '',
+        pathname: '**',
+      },
+    ],
+  },
 	typescript:{
 		ignoreBuildErrors:true
 	},
