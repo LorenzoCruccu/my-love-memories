@@ -154,7 +154,7 @@ const GoogleMapComponent = () => {
         ) : (
           <Pin
             background={"#D3D3D3"} // grey (for unvisited markers)
-            borderColor={"#A9A9A9"} // dark grey (border for unvisited markers)
+            borderColor={"#696969"} // dark grey (border for unvisited markers)
             glyphColor={"#696969"} // dim grey (glyph color for unvisited markers)
           />
         )}
