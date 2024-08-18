@@ -38,10 +38,10 @@ model MarkerComment {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  marker   Marker @relation(fields: [markerId], references: [id])
+  marker   Marker @relation(fields: [markerId], references: [id], onDelete: Cascade)
   markerId Int
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
+  createdBy   User   @relation(fields: [createdById], references: [id], onDelete: Cascade)
   createdById String
 
   CommentLike CommentLike[]
@@ -51,8 +51,8 @@ model CommentLike {
   id        Int      @id @default(autoincrement())
   commentId Int
   userId    String
-  comment   MarkerComment @relation(fields: [commentId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  comment   MarkerComment @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -64,8 +64,8 @@ model MarkerVisit {
   markerId  Int
   userId    String
   visitedAt DateTime @default(now()) // Automatically records the time of the visit
-  marker    Marker   @relation(fields: [markerId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
+  marker    Marker   @relation(fields: [markerId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([markerId, userId]) // Ensures a user can mark a marker as visited only once
 }
