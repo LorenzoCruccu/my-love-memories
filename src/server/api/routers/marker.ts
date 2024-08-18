@@ -10,28 +10,14 @@ export const markerRouter = createTRPCRouter({
 
 	getAllMarkers: publicProcedure.query(async ({ ctx }) => {
 		// Get the current user's ID from the session
-		const userId = ctx.session?.user?.id;
 	
 		// Fetch all markers and, if a user is logged in, determine if each is visited by the current user
-		const markers = await ctx.db.marker.findMany({
-			include: {
-				MarkerVisit: userId
-					? {
-							where: {
-								userId: userId, // Only fetch visits by the current user
-							},
-							select: {
-								id: true, // You can select additional fields if needed
-							},
-						}
-					: false, // Skip the MarkerVisit inclusion if userId is undefined
-			},
-		});
+		const markers = await ctx.db.marker.findMany();
 	
 		// Map over the markers to add a 'visitedByCurrentUser' flag if user is logged in
 		return markers.map((marker) => ({
 			...marker,
-			visitedByCurrentUser: userId ? marker.MarkerVisit.length > 0 : false,
+			visitedByCurrentUser: true,
 		}));
 	}),
 	
