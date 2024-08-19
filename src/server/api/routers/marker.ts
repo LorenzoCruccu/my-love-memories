@@ -10,9 +10,6 @@ export const markerRouter = createTRPCRouter({
 
 	getAllMarkers: publicProcedure.query(async ({ ctx }) => {
 		// Get the current user's ID from the session
-		const markerss = await ctx.db.marker.findMany({})
-		return markerss ?? null;
-		console.log("Context during build:", ctx);
 		const userId = ctx.session?.user?.id;
 	
 		// Fetch all markers and, if a user is logged in, determine if each is visited by the current user
