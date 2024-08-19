@@ -25,7 +25,7 @@ const center = {
 };
 
 const GoogleMapComponent = () => {
-  const allMarkers = []
+  const [allMarkers] = api.marker.getAllMarkers.useSuspenseQuery();
   const { data: session } = useSession();
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
