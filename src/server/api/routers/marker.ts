@@ -8,7 +8,7 @@ import {
 
 export const markerRouter = createTRPCRouter({
 
-	getAllMarkers: publicProcedure.query(async ({ ctx }) => {
+	getAllMarkers: protectedProcedure.query(async ({ ctx }) => {
 		// Get the current user's ID from the session
 		const markerss = await ctx.db.marker.findMany({})
 		return markerss ?? null;
