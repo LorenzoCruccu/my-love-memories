@@ -2,6 +2,25 @@ import React, { useState } from "react";
 import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { HiTrash, HiLocationMarker } from "react-icons/hi";
+import {
+  FaSun,
+  FaMoon,
+  FaStar,
+  FaMountain,
+  FaCity,
+  FaUmbrellaBeach,
+  FaLandmark,
+  FaUserFriends,
+  FaUser,
+  FaHeart,
+  FaDirections,
+  FaCheck,
+  FaBed,
+  FaGlassCheers,
+  FaMusic,
+  FaSmile,
+  FaTree,
+} from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
@@ -20,8 +39,6 @@ import {
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
 import { type MarkerWithVisitStatus, api } from "~/trpc/react";
 import MarkerComments from "./marker-comments";
-import { FaDirections, FaCheck } from "react-icons/fa";
-import { TbTargetArrow } from "react-icons/tb";
 import Image from "next/image";
 import {
   Carousel,
@@ -29,8 +46,11 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-} from "~/components/ui/carousel"; // Assuming you have a carousel component in shadcn
-
+} from "~/components/ui/carousel";
+import { Card, CardHeader, CardContent } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { TbTargetArrow } from "react-icons/tb";
+import { Spotify } from "react-spotify-embed";
 type MarkerDetailsSheetProps = {
   trigger: boolean;
   marker: MarkerWithVisitStatus;
@@ -52,24 +72,22 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const { showAlertDialog } = useAlertDialog();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [comment, setComment] = useState("");
-	
 
   const toggleVisit = api.markerVisit.toggleVisit.useMutation({
     onSuccess: async () => {
+			await utils.markerComment.invalidate();
       const message = marker.visitedByCurrentUser
         ? "Back in time!"
         : "Good job!";
       toast.success(message);
-      await utils.marker.invalidate();
-      await utils.markerVisit.invalidate();
-      await utils.markerComment.invalidate(); // Invalidate comments to update the list with the new comment
+			marker.visitedByCurrentUser = !marker.visitedByCurrentUser
     },
   });
 
   const addComment = api.markerComment.create.useMutation({
     onSuccess: async () => {
-      toggleVisit.mutate({ markerId: marker.id }); // Toggle the visit status after the comment is added
-      setIsCommentModalOpen(false); // Close the modal after success
+      toggleVisit.mutate({ markerId: marker.id });
+      setIsCommentModalOpen(false);
     },
   });
 
@@ -79,7 +97,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
       toast.success("You deleted this spot!");
     },
   });
-	
 
   const handleDelete = (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -111,10 +128,8 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const handleToggleVisit = () => {
     if (marker.visitedByCurrentUser) {
-      // Toggle visit directly if already visited
       toggleVisit.mutate({ markerId: marker.id });
     } else {
-      // Open the comment modal if not visited
       setIsCommentModalOpen(true);
     }
   };
@@ -124,46 +139,132 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
       toast.error("Comment cannot be empty!");
       return;
     }
-    // Add comment and toggle visit
     addComment.mutate({ markerId: marker.id, text: comment });
+  };
+
+  // Helper function to determine the icon based on the pill type
+  const getPillIcon = (pillType: string) => {
+    switch (pillType) {
+      case "sunset":
+        return <FaSun />;
+      case "sunrise":
+        return <FaMoon />;
+      case "stars":
+        return <FaStar />;
+      case "landscape":
+        return <FaMountain />;
+      case "beach":
+        return <FaUmbrellaBeach />;
+      case "city":
+        return <FaCity />;
+      case "monuments":
+        return <FaLandmark />;
+      case "friends":
+        return <FaUserFriends />;
+      case "alone":
+        return <FaUser />;
+      case "girlfriend":
+        return <FaHeart />;
+      case "party":
+        return <FaGlassCheers />;
+      case "romantic":
+        return <FaHeart />;
+      case "peaceful":
+        return <FaTree />;
+      case "relaxing":
+        return <FaBed />;
+      case "exciting":
+        return <FaSmile />;
+      case "music":
+        return <FaMusic />;
+      default:
+        return null;
+    }
   };
 
   return (
     <Sheet open={trigger} onOpenChange={onCancel}>
-      <SheetContent side={"bottom"} className="pb-4 sm:p-6">
+      <SheetContent side={"bottom"} className="pb-6 sm:p-8">
         <SheetHeader>
           <div className="mt-2 flex items-center text-sm text-gray-700">
             <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
-            <span className="pr-2 font-medium">{marker?.address}</span>
+            <span className="font-semibold">{marker?.address}</span>
           </div>
-          <SheetTitle className="mt-4 text-lg font-bold sm:text-xl">
+          <SheetTitle className="mt-2 text-center text-2xl font-bold">
             {marker.title}
           </SheetTitle>
+        </SheetHeader>
+        <SheetDescription></SheetDescription>
+        <div className="mt-4">
+          <Card className="shadow-lg">
+            <CardHeader>
+              <p className="text-center text-sm text-gray-500">
+                {marker.description}
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center gap-4">
+                {marker.suggestedSpotifySongUrl && (
+                  <div className="w-full max-w-md">
+                    {/* Adjust the width to be smaller on larger screens */}
+                    <Spotify wide link={marker.suggestedSpotifySongUrl} />
+                  </div>
+                )}
+                <div className="flex flex-wrap justify-center gap-2">
+                  {marker.mood && (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1 text-xs"
+                    >
+                      {getPillIcon(marker.mood)} {marker.mood}
+                    </Badge>
+                  )}
+                  {marker.mustSee && (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1 text-xs"
+                    >
+                      {getPillIcon(marker.mustSee)} {marker.mustSee}
+                    </Badge>
+                  )}
+                  {marker.suggestedWith && (
+                    <Badge
+                      variant="outline"
+                      className="flex items-center gap-1 text-xs"
+                    >
+                      {getPillIcon(marker.suggestedWith)} {marker.suggestedWith}
+                    </Badge>
+                  )}
+                  {(marker.suggestedAgeFrom ?? marker.suggestedAgeTo) && (
+                    <Badge variant="outline" className="text-xs">
+                      {marker.suggestedAgeFrom}-{marker.suggestedAgeTo} years
+                    </Badge>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
 
-          <SheetDescription className="mt-2 text-sm text-gray-500">
-            {marker.description}
-          </SheetDescription>
           {photoUrls.length > 0 && (
-            <div className="mt-4 flex justify-center">
+            <div className="mt-6">
               <Carousel
                 className="w-full max-w-2xl"
                 opts={{
                   align: "start",
                   loop: true,
                 }}
-
               >
                 <CarouselContent className="-ml-1 flex">
                   {photoUrls.map((photoUrl: string, index: number) => (
                     <CarouselItem
                       key={index}
-                      className="flex w-full justify-center" // Center the item horizontally
+                      className="flex w-full justify-center"
                     >
                       <div className="p-1">
                         <Image
                           src={photoUrl}
                           alt="Location"
-                          className="mx-auto h-80 w-full max-w-md rounded-lg object-cover" // Set height and ensure the image is responsive
+                          className="mx-auto h-80 w-full max-w-md rounded-lg object-cover"
                           width={800}
                           height={600}
                         />
@@ -176,24 +277,30 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               </Carousel>
             </div>
           )}
-          <div className="mt-6 flex justify-end gap-2">
-            <Button variant={"outline"} onClick={handleGetDirections}>
-              <FaDirections />
-              <span className="pl-1">Directions</span>
+
+          <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
+            <Button
+              variant={"outline"}
+              className="w-full sm:w-auto"
+              onClick={handleGetDirections}
+            >
+              <FaDirections className="mr-2" />
+              Directions
             </Button>
 
             {session && (
               <Button
                 variant={marker.visitedByCurrentUser ? "outline" : "default"}
+                className="w-full sm:w-auto"
                 onClick={handleToggleVisit}
               >
                 {marker.visitedByCurrentUser ? (
                   <>
-                    <FaCheck className="mr-1" /> Visited
+                    <FaCheck className="mr-2" /> Visited
                   </>
                 ) : (
                   <>
-                    <TbTargetArrow className="mr-1" /> HIT this marker!
+                    <TbTargetArrow className="mr-2" /> HIT this marker!
                   </>
                 )}
               </Button>
@@ -202,13 +309,16 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
             {marker.createdById === session?.user.id && (
               <Button
                 variant={"destructive"}
+                className="w-full sm:w-auto"
                 onClick={(e) => handleDelete(e, marker)}
               >
-                <HiTrash />
+                <HiTrash className="mr-2" />
+                Delete
               </Button>
             )}
           </div>
-        </SheetHeader>
+        </div>
+
         <div className="mt-6">
           <MarkerComments markerId={marker.id} />
         </div>
