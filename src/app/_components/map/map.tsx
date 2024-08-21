@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import MarkerDetailsSheet from "./marker/marker-details-sheet";
 import ControlPanel from "./controlPanel";
 import Title from "../site/title";
+import { FaStar } from "react-icons/fa";
 
 const center = {
   lat: 42.5,
@@ -105,103 +106,116 @@ const GoogleMapComponent = () => {
     });
   };
 
-  const MarkerWithInfoWindow: React.FC<{
-    marker: MarkerWithVisitStatus;
-  }> = ({ marker }) => {
-    const [markerRef, markerInstance] = useAdvancedMarkerRef();
-    const [infoWindowShown, setInfoWindowShown] = useState(false);
-    const [photos, setPhotos] = useState<string[]>([]);
-
-    const handleMarkerClick = useCallback(() => {
-      setInfoWindowShown((isShown) => !isShown);
-      if (!photos.length && markerInstance?.map) {
-        fetchPlaceDetails(marker.lat, marker.lng, markerInstance.map);
-      }
-    }, [photos, markerInstance?.map]);
-
-    const fetchPlaceDetails = (
-      lat: number,
-      lng: number,
-      map: google.maps.Map | null,
-    ) => {
-      if (!window.google?.maps.places) {
-        console.error("Google Places API is not loaded.");
-        return;
-      }
-
-      const service = new window.google.maps.places.PlacesService(map!);
-
-      const request = {
-        location: { lat, lng },
-        radius: 50, // Adjust this radius based on your requirements
-        query: marker.title, // Use the title or any query that best represents the place
-      };
-
-      service.nearbySearch(request, (results, status) => {
-        if (
-          status === window.google.maps.places.PlacesServiceStatus.OK &&
-          results?.[0]
-        ) {
-          const placeId = results[0].place_id;
-          if (!placeId) return;
-          service.getDetails(
-            { placeId, fields: ["photos"] },
-            (placeDetails, statusDetails) => {
-              if (
-                statusDetails ===
-                  window.google.maps.places.PlacesServiceStatus.OK &&
-                placeDetails?.photos
-              ) {
-                const photoUrls = placeDetails.photos.map((photo) =>
-                  photo.getUrl({ maxWidth: 1000, maxHeight: 1000 }),
-                );
-                setPhotos(photoUrls || []);
-              } else {
-                console.error("Failed to retrieve place details or photos.");
-              }
-            },
-          );
-        }
-      });
-    };
-
-    return (
-      <AdvancedMarker
-        ref={markerRef}
-        position={{ lat: marker.lat, lng: marker.lng }}
-        onClick={handleMarkerClick}
-      >
-        {marker.visitedByCurrentUser ? (
-          <Pin
-            background={"#AD49E1"} // lightPurple
-            borderColor={"#7A1CAC"} // purple
-            glyphColor={"#EBD3F8"} // lavender
-          />
-        ) : (
-          <Pin
-            background={"#D3D3D3"} // grey (for unvisited markers)
-            borderColor={"#696969"} // dark grey (border for unvisited markers)
-            glyphColor={"#696969"} // dim grey (glyph color for unvisited markers)
-          />
-        )}
-
-        {infoWindowShown && (
-          <>
-            <div>
-              <MarkerDetailsSheet
-                trigger={infoWindowShown}
-                marker={marker}
-                photoUrls={photos}
-                confirmText="Delete"
-                cancelText="Cancel"
-                onCancel={() => setInfoWindowShown(false)}
-              />
-            </div>
-          </>
-        )}
-      </AdvancedMarker>
-    );
-  };
+	const MarkerWithInfoWindow: React.FC<{
+		marker: MarkerWithVisitStatus;
+	}> = ({ marker }) => {
+		const [markerRef, markerInstance] = useAdvancedMarkerRef();
+		const [infoWindowShown, setInfoWindowShown] = useState(false);
+		const [photos, setPhotos] = useState<string[]>([]);
+	
+		const handleMarkerClick = useCallback(() => {
+			setInfoWindowShown((isShown) => !isShown);
+			if (!photos.length && markerInstance?.map) {
+				fetchPlaceDetails(marker.lat, marker.lng, markerInstance.map);
+			}
+		}, [photos, markerInstance?.map]);
+	
+		const fetchPlaceDetails = (
+			lat: number,
+			lng: number,
+			map: google.maps.Map | null,
+		) => {
+			if (!window.google?.maps.places) {
+				console.error("Google Places API is not loaded.");
+				return;
+			}
+	
+			const service = new window.google.maps.places.PlacesService(map!);
+	
+			const request = {
+				location: { lat, lng },
+				radius: 50,
+				query: marker.title,
+			};
+	
+			service.nearbySearch(request, (results, status) => {
+				if (
+					status === window.google.maps.places.PlacesServiceStatus.OK &&
+					results?.[0]
+				) {
+					const placeId = results[0].place_id;
+					if (!placeId) return;
+					service.getDetails(
+						{ placeId, fields: ["photos"] },
+						(placeDetails, statusDetails) => {
+							if (
+								statusDetails ===
+									window.google.maps.places.PlacesServiceStatus.OK &&
+								placeDetails?.photos
+							) {
+								const photoUrls = placeDetails.photos.map((photo) =>
+									photo.getUrl({ maxWidth: 1000, maxHeight: 1000 }),
+								);
+								setPhotos(photoUrls || []);
+							} else {
+								console.error("Failed to retrieve place details or photos.");
+							}
+						},
+					);
+				}
+			});
+		};
+	
+		const getPinColors = () => {
+			if (marker.visitedByCurrentUser) {
+				return {
+					background: "#AD49E1", // lightPurple for visited markers
+					borderColor: "#7A1CAC", // purple
+					glyphColor: "#EBD3F8", // lavender
+				};
+			}
+	
+			return {
+				background: "#D3D3D3", // grey for unvisited markers
+				borderColor: "#696969", // dark grey
+				glyphColor: "#696969", // dim grey
+			};
+		};
+	
+		const pinColors = getPinColors();
+	
+		return (
+			<AdvancedMarker
+				ref={markerRef}
+				position={{ lat: marker.lat, lng: marker.lng }}
+				onClick={handleMarkerClick}
+			>
+				<div className="relative">
+					<Pin
+						background={pinColors.background}
+						borderColor={pinColors.borderColor}
+						glyphColor={pinColors.glyphColor}
+					>
+					{marker.status === "APPROVED" ? "⭐" : ""}
+					</Pin>
+				</div>
+	
+				{infoWindowShown && (
+					<div>
+						<MarkerDetailsSheet
+							trigger={infoWindowShown}
+							marker={marker}
+							photoUrls={photos}
+							confirmText="Delete"
+							cancelText="Cancel"
+							onCancel={() => setInfoWindowShown(false)}
+						/>
+					</div>
+				)}
+			</AdvancedMarker>
+		);
+	};
+	
 
   // Handle map loading
   const handleMapIdle = useCallback(() => {

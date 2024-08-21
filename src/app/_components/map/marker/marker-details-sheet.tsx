@@ -15,11 +15,14 @@ import {
   FaHeart,
   FaDirections,
   FaCheck,
-  FaBed,
+  FaThumbsUp,
+  FaThumbsDown,
+  FaComments,  // Comment icon
   FaGlassCheers,
-  FaMusic,
-  FaSmile,
   FaTree,
+  FaBed,
+  FaSmile,
+  FaMusic,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -51,6 +54,7 @@ import { Card, CardHeader, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { TbTargetArrow } from "react-icons/tb";
 import { Spotify } from "react-spotify-embed";
+
 type MarkerDetailsSheetProps = {
   trigger: boolean;
   marker: MarkerWithVisitStatus;
@@ -72,15 +76,16 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const { showAlertDialog } = useAlertDialog();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [comment, setComment] = useState("");
+  const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false); // State to handle comments dialog
 
   const toggleVisit = api.markerVisit.toggleVisit.useMutation({
     onSuccess: async () => {
-			await utils.markerComment.invalidate();
+      await utils.markerComment.invalidate();
       const message = marker.visitedByCurrentUser
         ? "Back in time!"
         : "Good job!";
       toast.success(message);
-			marker.visitedByCurrentUser = !marker.visitedByCurrentUser
+      marker.visitedByCurrentUser = !marker.visitedByCurrentUser;
     },
   });
 
@@ -140,6 +145,18 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
       return;
     }
     addComment.mutate({ markerId: marker.id, text: comment });
+  };
+
+  // Handle voting logic
+  const voteMarker = api.markerVote.voteMarker.useMutation({
+    onSuccess: async () => {
+      await utils.marker.invalidate();
+      toast.success("Vote recorded!");
+    },
+  });
+
+  const handleVote = (voteType: "UP" | "DOWN") => {
+    voteMarker.mutate({ markerId: marker.id, vote: voteType });
   };
 
   // Helper function to determine the icon based on the pill type
@@ -206,7 +223,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               <div className="flex flex-col items-center gap-4">
                 {marker.suggestedSpotifySongUrl && (
                   <div className="w-full max-w-md">
-                    {/* Adjust the width to be smaller on larger screens */}
                     <Spotify wide link={marker.suggestedSpotifySongUrl} />
                   </div>
                 )}
@@ -279,6 +295,14 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           )}
 
           <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
+					<Button
+            variant="outline"
+            className="flex items-center"
+            onClick={() => setIsCommentsDialogOpen(true)}
+          >
+            <FaComments className="text-blue-500" />
+            <span className="ml-1 text-sm">{marker.commentsCount}</span>
+          </Button>
             <Button
               variant={"outline"}
               className="w-full sm:w-auto"
@@ -319,12 +343,31 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           </div>
         </div>
 
-        <div className="mt-6">
-          <MarkerComments markerId={marker.id} />
+        {/* Voting section styled similar to StackOverflow */}
+        <div className="mt-6 flex justify-center items-center gap-4">
+          <Button
+            variant="ghost"
+            className="flex flex-col items-center"
+            onClick={() => handleVote("UP")}
+          >
+            <FaThumbsUp className="text-green-500" />
+          </Button>
+          <div className="text-xl font-bold">{marker.voteCount}</div>
+
         </div>
       </SheetContent>
 
-      {/* Comment Modal */}
+      {/* Comments Dialog */}
+      <Dialog open={isCommentsDialogOpen} onOpenChange={setIsCommentsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Comments</DialogTitle>
+          </DialogHeader>
+          <MarkerComments markerId={marker.id} />
+        </DialogContent>
+      </Dialog>
+
+      {/* Comment Modal for new comment */}
       <Dialog open={isCommentModalOpen} onOpenChange={setIsCommentModalOpen}>
         <DialogContent>
           <DialogHeader>

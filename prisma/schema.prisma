@@ -24,6 +24,7 @@ model Marker {
   suggestedAgeFrom        Int?
   suggestedAgeTo          Int?
   suggestedSpotifySongUrl String? //url to spotify song
+  status        MarkerStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -33,8 +34,23 @@ model Marker {
 
   MarkerComment MarkerComment[]
   MarkerVisit   MarkerVisit[] // Relation to track visits
+  votes         MarkerVote[]       // New relationship for voting
 
   @@index([title])
+}
+
+
+model MarkerVote {
+  id        Int      @id @default(autoincrement())
+  markerId  Int
+  userId    String
+  vote  VoteType
+  createdAt DateTime @default(now())
+
+  marker Marker @relation(fields: [markerId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([markerId, userId])
 }
 
 model MarkerComment {
@@ -130,6 +146,8 @@ model User {
   MarkerComment MarkerComment[]
   CommentLike   CommentLike[]
   MarkerVisit   MarkerVisit[]
+
+  MarkerVote MarkerVote[]
 }
 
 model VerificationToken {
@@ -138,4 +156,15 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+enum VoteType {
+  UP
+  DOWN
+}
+
+enum MarkerStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }

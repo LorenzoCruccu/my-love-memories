@@ -15,6 +15,8 @@ export const markerRouter = createTRPCRouter({
 		// Fetch all markers and, if a user is logged in, determine if each is visited by the current user
 		const markers = await ctx.db.marker.findMany({
 			include: {
+				votes:true,
+				MarkerComment:true,
 				MarkerVisit: userId
 					? {
 						where: {
@@ -29,10 +31,21 @@ export const markerRouter = createTRPCRouter({
 		});
 
 		// Map over the markers to add a 'visitedByCurrentUser' flag if user is logged in
-		return markers.map((marker) => ({
-			...marker,
-			visitedByCurrentUser: userId ? marker.MarkerVisit.length > 0 : false,
-		}));
+		return markers.map((marker) => {
+			const upvotes = marker.votes.filter(vote => vote.voteType === "UP").length;
+			const downvotes = marker.votes.filter(vote => vote.voteType === "DOWN").length;
+			const commentsCount = marker.MarkerComment.length
+
+			return {
+				...marker,
+				visitedByCurrentUser: userId ? marker.MarkerVisit.length > 0 : false,
+				voteCount: upvotes - downvotes, // Calculate net vote count
+				upvotes,  // Total upvotes
+				downvotes, // Total downvotes
+				commentsCount
+			};
+		});
+
 	}),
 
 	create: protectedProcedure
@@ -65,6 +78,7 @@ export const markerRouter = createTRPCRouter({
 					suggestedAgeFrom: input.suggestedAgeFrom,
 					suggestedAgeTo: input.suggestedAgeTo,
 					suggestedSpotifySongUrl: input.suggestedSpotifySongUrl,
+					status: "PENDING",  // Set status to pending
 					createdBy: { connect: { id: ctx.session.user.id } },
 				},
 			});
