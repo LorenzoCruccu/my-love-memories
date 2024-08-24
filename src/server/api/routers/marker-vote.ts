@@ -65,8 +65,6 @@ export const markerVote = createTRPCRouter({
       return { hasVoted: !!existingVote };
     }),
 
-
-
 		removeVote: protectedProcedure
     .input(
       z.object({

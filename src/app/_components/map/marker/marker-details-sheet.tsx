@@ -65,7 +65,7 @@ type MarkerDetailsSheetProps = {
   cancelText?: string;
 };
 
-const getLevelAndProgress = (voteCount: number) => {
+export const getLevelAndProgress = (voteCount: number) => {
   if (voteCount <= 10) {
     return { level: 1, progress: (voteCount / 10) * 100 };
   } else if (voteCount <= 50) {
@@ -74,6 +74,7 @@ const getLevelAndProgress = (voteCount: number) => {
     return { level: 3, progress: 100 };
   }
 };
+
 
 const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   trigger,
@@ -227,18 +228,22 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
     <Sheet open={trigger} onOpenChange={onCancel}>
       <SheetContent side={"bottom"} className="pb-6 sm:p-8">
         <SheetHeader>
-          <div className="mt-2 flex items-center text-sm text-gray-700">
-            <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
-            <span className="font-semibold">{marker?.address}</span>
-          </div>
+   
           <SheetTitle className="mt-2 text-center text-2xl font-bold">
             {marker.title}
+						<div className="text-center text-sm text-gray-700">
+							<span className="flex justify-center pt-4">
+							<HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
+            <span className="font-semibold">{marker?.address}</span>
+							</span>
+  
+          </div>
           </SheetTitle>
         </SheetHeader>
 
         <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
           {/* Progress Bar Card */}
-          <Card className="shadow-lg flex items-center justify-center">
+          <Card className="shadow-lg flex flex-col items-center justify-center pb-4">
             <CircleProgress progress={progress} level={level} voteCount={totalVotes ?? 0} />
             <Button
               variant="outline"
