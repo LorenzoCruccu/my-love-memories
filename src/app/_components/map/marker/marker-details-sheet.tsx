@@ -3,33 +3,32 @@ import { type Marker } from "@prisma/client";
 import { useSession } from "next-auth/react";
 import { HiTrash, HiLocationMarker } from "react-icons/hi";
 import {
-  FaSun,
-  FaMoon,
-  FaStar,
-  FaMountain,
-  FaCity,
-  FaUmbrellaBeach,
-  FaLandmark,
-  FaUserFriends,
-  FaUser,
-  FaHeart,
-  FaDirections,
-  FaCheck,
   FaThumbsUp,
   FaThumbsDown,
-  FaComments,  // Comment icon
-  FaGlassCheers,
-  FaTree,
+  FaComments,
+  FaDirections,
+  FaCheck,
   FaBed,
-  FaSmile,
+  FaCity,
+  FaGlassCheers,
+  FaHeart,
+  FaLandmark,
+  FaMoon,
+  FaMountain,
   FaMusic,
+  FaSmile,
+  FaStar,
+  FaSun,
+  FaTree,
+  FaUmbrellaBeach,
+  FaUser,
+  FaUserFriends,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
 } from "~/components/ui/sheet";
@@ -54,6 +53,7 @@ import { Card, CardHeader, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { TbTargetArrow } from "react-icons/tb";
 import { Spotify } from "react-spotify-embed";
+import CircleProgress from "~/components/ui/circle-progress";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
@@ -63,6 +63,16 @@ type MarkerDetailsSheetProps = {
   onCancel?: () => void;
   confirmText?: string;
   cancelText?: string;
+};
+
+const getLevelAndProgress = (voteCount: number) => {
+  if (voteCount <= 10) {
+    return { level: 1, progress: (voteCount / 10) * 100 };
+  } else if (voteCount <= 50) {
+    return { level: 2, progress: ((voteCount - 10) / 40) * 100 };
+  } else {
+    return { level: 3, progress: 100 };
+  }
 };
 
 const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
@@ -76,7 +86,12 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const { showAlertDialog } = useAlertDialog();
   const [isCommentModalOpen, setIsCommentModalOpen] = useState(false);
   const [comment, setComment] = useState("");
-  const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false); // State to handle comments dialog
+  const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false);
+
+  const { data: totalVotes } = api.markerVote.getTotalVotes.useQuery({ markerId: marker.id });
+  const { data: userVote } = api.markerVote.checkUserVote.useQuery({ markerId: marker.id });
+
+  const { level, progress } = getLevelAndProgress(totalVotes ?? 0);
 
   const toggleVisit = api.markerVisit.toggleVisit.useMutation({
     onSuccess: async () => {
@@ -147,19 +162,28 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
     addComment.mutate({ markerId: marker.id, text: comment });
   };
 
-  // Handle voting logic
   const voteMarker = api.markerVote.voteMarker.useMutation({
     onSuccess: async () => {
-      await utils.marker.invalidate();
+      await utils.markerVote.invalidate();
       toast.success("Vote recorded!");
     },
   });
 
+  const removeVote = api.markerVote.removeVote.useMutation({
+    onSuccess: async () => {
+      await utils.markerVote.invalidate();
+      toast.success("Vote removed!");
+    },
+  });
+
   const handleVote = (voteType: "UP" | "DOWN") => {
-    voteMarker.mutate({ markerId: marker.id, vote: voteType });
+    if (userVote?.hasVoted) {
+      removeVote.mutate({ markerId: marker.id });
+    } else {
+      voteMarker.mutate({ markerId: marker.id, vote: voteType });
+    }
   };
 
-  // Helper function to determine the icon based on the pill type
   const getPillIcon = (pillType: string) => {
     switch (pillType) {
       case "sunset":
@@ -211,7 +235,40 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
             {marker.title}
           </SheetTitle>
         </SheetHeader>
-        <SheetDescription></SheetDescription>
+
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Progress Bar Card */}
+          <Card className="shadow-lg flex items-center justify-center">
+            <CircleProgress progress={progress} level={level} voteCount={totalVotes ?? 0} />
+            <Button
+              variant="outline"
+              className="flex flex-col items-center"
+              onClick={() => handleVote("UP")}
+            >
+              {userVote?.hasVoted ? (
+                <>
+                  <FaThumbsDown className="text-red-500" />
+                  Remove Vote
+                </>
+              ) : (
+                <>
+                  <FaThumbsUp className="text-green-500" />
+                  Upvote
+                </>
+              )}
+            </Button>
+          </Card>
+
+          {/* Spotify Song Card */}
+          {marker.suggestedSpotifySongUrl && (
+            <Card className="shadow-lg flex items-center justify-center">
+              <div className="w-full max-w-xl">
+                <Spotify wide link={marker.suggestedSpotifySongUrl} />
+              </div>
+            </Card>
+          )}
+        </div>
+
         <div className="mt-4">
           <Card className="shadow-lg">
             <CardHeader>
@@ -221,11 +278,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center gap-4">
-                {marker.suggestedSpotifySongUrl && (
-                  <div className="w-full max-w-md">
-                    <Spotify wide link={marker.suggestedSpotifySongUrl} />
-                  </div>
-                )}
                 <div className="flex flex-wrap justify-center gap-2">
                   {marker.mood && (
                     <Badge
@@ -295,14 +347,14 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           )}
 
           <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
-					<Button
-            variant="outline"
-            className="flex items-center"
-            onClick={() => setIsCommentsDialogOpen(true)}
-          >
-            <FaComments className="text-blue-500" />
-            <span className="ml-1 text-sm">{marker.commentsCount}</span>
-          </Button>
+            <Button
+              variant="outline"
+              className="flex items-center"
+              onClick={() => setIsCommentsDialogOpen(true)}
+            >
+              <FaComments className="text-blue-500" />
+              <span className="ml-1 text-sm">{marker.commentsCount}</span>
+            </Button>
             <Button
               variant={"outline"}
               className="w-full sm:w-auto"
@@ -343,21 +395,8 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           </div>
         </div>
 
-        {/* Voting section styled similar to StackOverflow */}
-        <div className="mt-6 flex justify-center items-center gap-4">
-          <Button
-            variant="ghost"
-            className="flex flex-col items-center"
-            onClick={() => handleVote("UP")}
-          >
-            <FaThumbsUp className="text-green-500" />
-          </Button>
-          <div className="text-xl font-bold">{marker.voteCount}</div>
-
-        </div>
       </SheetContent>
 
-      {/* Comments Dialog */}
       <Dialog open={isCommentsDialogOpen} onOpenChange={setIsCommentsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -367,7 +406,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
         </DialogContent>
       </Dialog>
 
-      {/* Comment Modal for new comment */}
       <Dialog open={isCommentModalOpen} onOpenChange={setIsCommentModalOpen}>
         <DialogContent>
           <DialogHeader>

@@ -28,7 +28,7 @@ export const markerVote = createTRPCRouter({
             id: existingVote.id,
           },
           data: {
-            voteType:input.vote,
+            voteType: input.vote,
           },
         });
       } else {
@@ -37,12 +37,76 @@ export const markerVote = createTRPCRouter({
           data: {
             markerId,
             userId: ctx.session.user.id,
-            voteType:input.vote,
+            voteType: input.vote,
           },
         });
       }
 
       // Optionally, return the updated marker or some other relevant data
       return { success: true };
+    }),
+
+		checkUserVote: protectedProcedure
+    .input(
+      z.object({
+        markerId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const existingVote = await ctx.db.markerVote.findUnique({
+        where: {
+          markerId_userId: {
+            markerId: input.markerId,
+            userId: ctx.session.user.id,
+          },
+        },
+      });
+
+      return { hasVoted: !!existingVote };
+    }),
+
+
+
+		removeVote: protectedProcedure
+    .input(
+      z.object({
+        markerId: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const existingVote = await ctx.db.markerVote.findUnique({
+        where: {
+          markerId_userId: {
+            markerId: input.markerId,
+            userId: ctx.session.user.id,
+          },
+        },
+      });
+
+      if (existingVote) {
+        await ctx.db.markerVote.delete({
+          where: {
+            id: existingVote.id,
+          },
+        });
+      }
+
+      return { success: true };
+    }),
+
+  getTotalVotes: protectedProcedure
+    .input(
+      z.object({
+        markerId: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const totalVotes = await ctx.db.markerVote.count({
+        where: {
+          markerId: input.markerId,
+        },
+      });
+
+      return totalVotes ;
     }),
 });

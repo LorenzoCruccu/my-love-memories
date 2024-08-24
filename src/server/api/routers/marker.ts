@@ -32,16 +32,11 @@ export const markerRouter = createTRPCRouter({
 
 		// Map over the markers to add a 'visitedByCurrentUser' flag if user is logged in
 		return markers.map((marker) => {
-			const upvotes = marker.votes.filter(vote => vote.voteType === "UP").length;
-			const downvotes = marker.votes.filter(vote => vote.voteType === "DOWN").length;
 			const commentsCount = marker.MarkerComment.length
 
 			return {
 				...marker,
 				visitedByCurrentUser: userId ? marker.MarkerVisit.length > 0 : false,
-				voteCount: upvotes - downvotes, // Calculate net vote count
-				upvotes,  // Total upvotes
-				downvotes, // Total downvotes
 				commentsCount
 			};
 		});
