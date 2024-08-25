@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Marker {
-  id                      Int    @id @default(autoincrement())
+  id                      Int          @id @default(autoincrement())
   lat                     Float
   lng                     Float
   address                 String
@@ -24,7 +24,7 @@ model Marker {
   suggestedAgeFrom        Int?
   suggestedAgeTo          Int?
   suggestedSpotifySongUrl String? //url to spotify song
-  status        MarkerStatus @default(PENDING)
+  status                  MarkerStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -34,17 +34,16 @@ model Marker {
 
   MarkerComment MarkerComment[]
   MarkerVisit   MarkerVisit[] // Relation to track visits
-  votes         MarkerVote[]       // New relationship for voting
+  votes         MarkerVote[] // New relationship for voting
 
   @@index([title])
 }
-
 
 model MarkerVote {
   id        Int      @id @default(autoincrement())
   markerId  Int
   userId    String
-  vote  VoteType
+  vote      VoteType
   createdAt DateTime @default(now())
 
   marker Marker @relation(fields: [markerId], references: [id], onDelete: Cascade)

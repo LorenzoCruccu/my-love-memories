@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import MarkerDetailsSheet from "./marker/marker-details-sheet";
 import ControlPanel from "./controlPanel";
 import Title from "../site/title";
-import { FaStar } from "react-icons/fa";
 
 const center = {
   lat: 42.5,

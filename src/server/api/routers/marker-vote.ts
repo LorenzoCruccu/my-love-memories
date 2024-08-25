@@ -28,7 +28,7 @@ export const markerVote = createTRPCRouter({
             id: existingVote.id,
           },
           data: {
-            voteType: input.vote,
+            vote: input.vote,
           },
         });
       } else {
@@ -37,7 +37,7 @@ export const markerVote = createTRPCRouter({
           data: {
             markerId,
             userId: ctx.session.user.id,
-            voteType: input.vote,
+            vote: input.vote,
           },
         });
       }
