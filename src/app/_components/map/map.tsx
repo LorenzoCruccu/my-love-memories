@@ -280,7 +280,6 @@ const GoogleMapComponent = () => {
         )}
 
         <MapHandler place={selectedPlace} />
-        <Title />
         <ControlPanel onAdd={handleAdd} onTrophyClick={handleTrophyClick} />
         {allMarkers &&
           allMarkers.length > 0 &&

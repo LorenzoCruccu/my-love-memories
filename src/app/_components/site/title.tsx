@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { Badge } from "~/components/ui/badge";
 import {
@@ -7,8 +9,7 @@ import {
   SheetTitle,
 } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
-import { FaBars, FaHome, FaMapMarkerAlt, FaInfoCircle } from "react-icons/fa";
-import Image from "next/image";
+import { FaBars, FaHome, FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
 
 const Title: React.FC = () => {
@@ -22,8 +23,12 @@ const Title: React.FC = () => {
     setIsSheetOpen(false);
   };
 
+  const handleLinkClick = () => {
+    handleCloseSheet(); // Close the sheet when a link is clicked
+  };
+
   return (
-    <div className="absolute left-0 top-0 mt-2 flex items-center p-2 space-x-3 cursor-pointer">
+    <div className="absolute z-30 left-0 top-0 mt-2 flex items-center p-2 space-x-3 cursor-pointer">
       <Badge
         className="flex items-center rounded-full bg-purple hover:bg-lightPurple p-2 focus:bg-purple-700 sm:px-4 sm:py-2"
         onClick={handleOpenSheet}
@@ -35,31 +40,29 @@ const Title: React.FC = () => {
         >
           <FaBars size={24} />
         </Button>
-        <span className="flex items-center ml-2">
-          <Image
-            className="h-6 w-6 object-contain sm:h-8 sm:w-8"
-            src={"/static/hide-and-hit-logo.png"}
-            alt={"logo hide and hit"}
-            sizes="auto"
-            height={32}
-            width={32}
-          />
-        </span>
       </Badge>
 
       {/* Sheet for displaying site info */}
       <Sheet open={isSheetOpen} onOpenChange={handleCloseSheet}>
-        <SheetContent side="left" className="w-64 sm:w-80 bg-lavender">
+        <SheetContent side="left" className="w-64 sm:w-80 bg-slate-200">
           <SheetHeader>
-            <SheetTitle className="text-xl font-bold">Menu</SheetTitle>
+            <SheetTitle className="text-xl font-bold">Hide and Hit</SheetTitle>
           </SheetHeader>
           <div className="px-4 py-6 space-y-4">
             <nav className="space-y-4">
-              <Link href="/" className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+              <Link
+                href="/"
+                className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                onClick={handleLinkClick}
+              >
                 <FaHome size={20} />
                 <span>Home</span>
               </Link>
-              <Link href="/about" className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white">
+              <Link
+                href="/about"
+                className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                onClick={handleLinkClick}
+              >
                 <FaInfoCircle size={20} />
                 <span>How this works?</span>
               </Link>

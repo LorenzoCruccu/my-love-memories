@@ -13,6 +13,7 @@ import { cn } from "~/lib/utils";
 import NextAuthProvider from "~/providers/next-auth-provider";
 import { AlertDialogProvider } from "~/providers/alert-dialog-provider";
 import { Toaster } from "~/components/ui/sonner";
+import Title from "./_components/site/title";
 
 export const metadata: Metadata = {
   title: "Hide and Hit",
@@ -35,6 +36,7 @@ export default async function RootLayout({
           <NextAuthProvider>
             <AlertDialogProvider>
 							<Toaster />
+							<Title />
 							{children}
 							</AlertDialogProvider>
           </NextAuthProvider>
