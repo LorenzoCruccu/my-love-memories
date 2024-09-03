@@ -41,14 +41,6 @@ import {
 import { useAlertDialog } from "~/providers/alert-dialog-provider";
 import { type MarkerWithVisitStatus, api } from "~/trpc/react";
 import MarkerComments from "./marker-comments";
-import Image from "next/image";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "~/components/ui/carousel";
 import { Card, CardHeader, CardContent } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { TbTargetArrow } from "react-icons/tb";
@@ -74,7 +66,6 @@ export const getLevelAndProgress = (voteCount: number) => {
   }
 };
 
-
 const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   trigger,
   marker,
@@ -87,8 +78,12 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const [comment, setComment] = useState("");
   const [isCommentsDialogOpen, setIsCommentsDialogOpen] = useState(false);
 
-  const { data: totalVotes } = api.markerVote.getTotalVotes.useQuery({ markerId: marker.id });
-  const { data: userVote } = api.markerVote.checkUserVote.useQuery({ markerId: marker.id });
+  const { data: totalVotes } = api.markerVote.getTotalVotes.useQuery({
+    markerId: marker.id,
+  });
+  const { data: userVote } = api.markerVote.checkUserVote.useQuery({
+    markerId: marker.id,
+  });
 
   const { level, progress } = getLevelAndProgress(totalVotes ?? 0);
 
@@ -185,38 +180,13 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const getPillIcon = (pillType: string) => {
     switch (pillType) {
-      case "sunset":
-        return <FaSun />;
-      case "sunrise":
-        return <FaMoon />;
-      case "stars":
-        return <FaStar />;
-      case "landscape":
-        return <FaMountain />;
-      case "beach":
-        return <FaUmbrellaBeach />;
-      case "city":
-        return <FaCity />;
-      case "monuments":
-        return <FaLandmark />;
-      case "friends":
-        return <FaUserFriends />;
-      case "alone":
-        return <FaUser />;
-      case "girlfriend":
-        return <FaHeart />;
       case "party":
         return <FaGlassCheers />;
       case "romantic":
         return <FaHeart />;
       case "peaceful":
         return <FaTree />;
-      case "relaxing":
-        return <FaBed />;
-      case "exciting":
-        return <FaSmile />;
-      case "music":
-        return <FaMusic />;
+
       default:
         return null;
     }
@@ -226,23 +196,25 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
     <Sheet open={trigger} onOpenChange={onCancel}>
       <SheetContent side={"bottom"} className="pb-6 sm:p-8">
         <SheetHeader>
-   
           <SheetTitle className="mt-2 text-center text-2xl font-bold">
             {marker.title}
-						<div className="text-center text-sm text-gray-700">
-							<span className="flex justify-center pt-4">
-							<HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
-            <span className="font-semibold">{marker?.address}</span>
-							</span>
-  
-          </div>
+            <div className="text-center text-sm text-gray-700">
+              <span className="flex justify-center pt-4">
+                <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
+                <span className="font-semibold">{marker?.address}</span>
+              </span>
+            </div>
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
           {/* Progress Bar Card */}
-          <Card className="shadow-lg flex flex-col items-center justify-center pb-4">
-            <CircleProgress progress={progress} level={level} voteCount={totalVotes ?? 0} />
+          <Card className="flex flex-col items-center justify-center pb-4 shadow-lg">
+            <CircleProgress
+              progress={progress}
+              level={level}
+              voteCount={totalVotes ?? 0}
+            />
             <Button
               variant="outline"
               className="flex flex-col items-center"
@@ -264,7 +236,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
           {/* Spotify Song Card */}
           {marker.suggestedSpotifySongUrl && (
-            <Card className="shadow-lg flex items-center justify-center">
+            <Card className="flex items-center justify-center shadow-lg">
               <div className="w-full max-w-xl">
                 <Spotify wide link={marker.suggestedSpotifySongUrl} />
               </div>
@@ -288,27 +260,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
                       className="flex items-center gap-1 text-xs"
                     >
                       {getPillIcon(marker.mood)} {marker.mood}
-                    </Badge>
-                  )}
-                  {marker.mustSee && (
-                    <Badge
-                      variant="outline"
-                      className="flex items-center gap-1 text-xs"
-                    >
-                      {getPillIcon(marker.mustSee)} {marker.mustSee}
-                    </Badge>
-                  )}
-                  {marker.suggestedWith && (
-                    <Badge
-                      variant="outline"
-                      className="flex items-center gap-1 text-xs"
-                    >
-                      {getPillIcon(marker.suggestedWith)} {marker.suggestedWith}
-                    </Badge>
-                  )}
-                  {(marker.suggestedAgeFrom ?? marker.suggestedAgeTo) && (
-                    <Badge variant="outline" className="text-xs">
-                      {marker.suggestedAgeFrom}-{marker.suggestedAgeTo} years
                     </Badge>
                   )}
                 </div>
@@ -364,13 +315,17 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
             )}
           </div>
         </div>
-
       </SheetContent>
 
-      <Dialog open={isCommentsDialogOpen} onOpenChange={setIsCommentsDialogOpen}>
+      <Dialog
+        open={isCommentsDialogOpen}
+        onOpenChange={setIsCommentsDialogOpen}
+      >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Comments</DialogTitle>
+            <DialogTitle>
+              <h3 className="text-lg font-bold">Comments</h3>
+            </DialogTitle>
           </DialogHeader>
           <MarkerComments markerId={marker.id} />
         </DialogContent>

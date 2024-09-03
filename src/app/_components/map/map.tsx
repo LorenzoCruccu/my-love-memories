@@ -17,7 +17,6 @@ import Image from "next/image";
 import { toast } from "sonner";
 import MarkerDetailsSheet from "./marker/marker-details-sheet";
 import ControlPanel from "./controlPanel";
-import Title from "../site/title";
 
 const center = {
   lat: 42.5,
@@ -25,7 +24,7 @@ const center = {
 };
 
 const GoogleMapComponent = () => {
-  const {data:allMarkers} = api.marker.getAllMarkers.useQuery()
+  const { data: allUserMarkers } = api.marker.getUserMarkers.useQuery();
   const { data: session } = useSession();
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
@@ -105,66 +104,64 @@ const GoogleMapComponent = () => {
     });
   };
 
-	const MarkerWithInfoWindow: React.FC<{
-		marker: MarkerWithVisitStatus;
-	}> = ({ marker }) => {
-		const [markerRef, markerInstance] = useAdvancedMarkerRef();
-		const [infoWindowShown, setInfoWindowShown] = useState(false);
-	
-		const handleMarkerClick = useCallback(() => {
-			setInfoWindowShown((isShown) => !isShown);
-		}, []);
-	
-	
-		const getPinColors = () => {
-			if (marker.visitedByCurrentUser) {
-				return {
-					background: "#AD49E1", // lightPurple for visited markers
-					borderColor: "#7A1CAC", // purple
-					glyphColor: "#EBD3F8", // lavender
-				};
-			}
-	
-			return {
-				background: "#D3D3D3", // grey for unvisited markers
-				borderColor: "#696969", // dark grey
-				glyphColor: "#696969", // dim grey
-			};
-		};
-	
-		const pinColors = getPinColors();
-	
-		return (
-			<AdvancedMarker
-				ref={markerRef}
-				position={{ lat: marker.lat, lng: marker.lng }}
-				onClick={handleMarkerClick}
-			>
-				<div className="relative">
-					<Pin
-						background={pinColors.background}
-						borderColor={pinColors.borderColor}
-						glyphColor={pinColors.glyphColor}
-					>
-					{marker.status === "APPROVED" ? "⭐" : ""}
-					</Pin>
-				</div>
-	
-				{infoWindowShown && (
-					<div>
-						<MarkerDetailsSheet
-							trigger={infoWindowShown}
-							marker={marker}
-							confirmText="Delete"
-							cancelText="Cancel"
-							onCancel={() => setInfoWindowShown(false)}
-						/>
-					</div>
-				)}
-			</AdvancedMarker>
-		);
-	};
-	
+  const MarkerWithInfoWindow: React.FC<{
+    marker: MarkerWithVisitStatus;
+  }> = ({ marker }) => {
+    const [markerRef, markerInstance] = useAdvancedMarkerRef();
+    const [infoWindowShown, setInfoWindowShown] = useState(false);
+
+    const handleMarkerClick = useCallback(() => {
+      setInfoWindowShown((isShown) => !isShown);
+    }, []);
+
+    const getPinColors = () => {
+      if (marker.visitedByCurrentUser) {
+        return {
+          background: "#AD49E1", // lightPurple for visited markers
+          borderColor: "#7A1CAC", // purple
+          glyphColor: "#EBD3F8", // lavender
+        };
+      }
+
+      return {
+        background: "#D3D3D3", // grey for unvisited markers
+        borderColor: "#696969", // dark grey
+        glyphColor: "#696969", // dim grey
+      };
+    };
+
+    const pinColors = getPinColors();
+
+    return (
+      <AdvancedMarker
+        ref={markerRef}
+        position={{ lat: marker.lat, lng: marker.lng }}
+        onClick={handleMarkerClick}
+      >
+        <div className="relative">
+          <Pin
+            background={pinColors.background}
+            borderColor={pinColors.borderColor}
+            glyphColor={pinColors.glyphColor}
+          >
+            {""}
+          </Pin>
+        </div>
+
+        {infoWindowShown && (
+          <div>
+            <MarkerDetailsSheet
+              trigger={infoWindowShown}
+              marker={marker}
+              confirmText="Delete"
+              cancelText="Cancel"
+              onCancel={() => setInfoWindowShown(false)}
+            />
+          </div>
+        )}
+      </AdvancedMarker>
+    );
+  };
 
   // Handle map loading
   const handleMapIdle = useCallback(() => {
@@ -231,9 +228,9 @@ const GoogleMapComponent = () => {
 
         <MapHandler place={selectedPlace} />
         <ControlPanel onAdd={handleAdd} onTrophyClick={handleTrophyClick} />
-        {allMarkers &&
-          allMarkers.length > 0 &&
-          allMarkers.map((_marker) => (
+        {allUserMarkers &&
+          allUserMarkers.length > 0 &&
+          allUserMarkers.map((_marker) => (
             <MarkerWithInfoWindow key={_marker.id} marker={_marker} />
           ))}
       </Map>

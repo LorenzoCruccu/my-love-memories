@@ -17,9 +17,8 @@ type MarkerCommentsProps = {
 
 const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
   const { data: session } = useSession();
-  const { data: comments, isPending } = api.markerComment.getCommentsFromMarkerId.useQuery(
-    { markerId },
-  );
+  const { data: comments, isPending } =
+    api.markerComment.getCommentsFromMarkerId.useQuery({ markerId });
   const utils = api.useUtils();
   const { showAlertDialog } = useAlertDialog();
 
@@ -91,8 +90,7 @@ const MarkerComments: React.FC<MarkerCommentsProps> = ({ markerId }) => {
 
   return (
     <div>
-      <h3 className="mt-4 text-lg font-bold">Comments</h3>
-      <Separator className="my-2" />
+      <Separator className="" />
       <ScrollArea className="h-44">
         {isPending ? (
           <div>

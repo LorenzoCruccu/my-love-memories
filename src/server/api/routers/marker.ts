@@ -88,7 +88,6 @@ export const markerRouter = createTRPCRouter({
 					suggestedAgeFrom: input.suggestedAgeFrom,
 					suggestedAgeTo: input.suggestedAgeTo,
 					suggestedSpotifySongUrl: input.suggestedSpotifySongUrl,
-					status: "PENDING",  // Set status to pending
 					createdBy: { connect: { id: ctx.session.user.id } },
 				},
 			});
@@ -103,6 +102,46 @@ export const markerRouter = createTRPCRouter({
 				where: { id: input.id },
 			});
 			return { success: true };
+		}),
+
+
+		getUserMarkers: protectedProcedure.query(async ({ ctx }) => {
+			const userId = ctx.session?.user?.id;
+	
+			if (!userId) {
+				throw new Error("User not authenticated");
+			}
+	
+			const markers = await ctx.db.marker.findMany({
+				where: {
+					createdById: userId, // Filter markers by the user's ID
+				},
+				include: {
+					votes: true,
+					MarkerComment: true,
+					MarkerVisit: {
+						where: {
+							userId: userId, // Only fetch visits by the current user
+						},
+						select: {
+							id: true,
+						},
+					},
+				},
+			});
+	
+			return markers.map((marker) => {
+				const commentsCount = marker.MarkerComment.length;
+				const voteCount = marker.votes.length;
+				const { level } = getLevelAndProgress(voteCount);
+	
+				return {
+					...marker,
+					visitedByCurrentUser: marker.MarkerVisit.length > 0,
+					commentsCount,
+					level,
+				};
+			});
 		}),
 
 });

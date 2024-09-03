@@ -18,13 +18,10 @@ model Marker {
   address                 String
   title                   String
   description             String
-  mood                    String? //peaceful, party,
-  mustSee                 String? //sunset, sunrise, stars, landscape, beach, city, monuments
-  suggestedWith           String? //friends, alone, girlfriend, everyone
-  suggestedAgeFrom        Int?
-  suggestedAgeTo          Int?
+  mood                    String? //peaceful, romantic, passionate
+  partnerName             String
+  partnerInstagram        String?
   suggestedSpotifySongUrl String? //url to spotify song
-  status                  MarkerStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -160,10 +157,4 @@ model VerificationToken {
 enum VoteType {
   UP
   DOWN
-}
-
-enum MarkerStatus {
-  PENDING
-  APPROVED
-  REJECTED
 }
