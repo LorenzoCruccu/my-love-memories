@@ -110,60 +110,11 @@ const GoogleMapComponent = () => {
 	}> = ({ marker }) => {
 		const [markerRef, markerInstance] = useAdvancedMarkerRef();
 		const [infoWindowShown, setInfoWindowShown] = useState(false);
-		const [photos, setPhotos] = useState<string[]>([]);
 	
 		const handleMarkerClick = useCallback(() => {
 			setInfoWindowShown((isShown) => !isShown);
-			if (!photos.length && markerInstance?.map) {
-				fetchPlaceDetails(marker.lat, marker.lng, markerInstance.map);
-			}
-		}, [photos, markerInstance?.map]);
+		}, []);
 	
-		const fetchPlaceDetails = (
-			lat: number,
-			lng: number,
-			map: google.maps.Map | null,
-		) => {
-			if (!window.google?.maps.places) {
-				console.error("Google Places API is not loaded.");
-				return;
-			}
-	
-			const service = new window.google.maps.places.PlacesService(map!);
-	
-			const request = {
-				location: { lat, lng },
-				radius: 50,
-				query: marker.title,
-			};
-	
-			service.nearbySearch(request, (results, status) => {
-				if (
-					status === window.google.maps.places.PlacesServiceStatus.OK &&
-					results?.[0]
-				) {
-					const placeId = results[0].place_id;
-					if (!placeId) return;
-					service.getDetails(
-						{ placeId, fields: ["photos"] },
-						(placeDetails, statusDetails) => {
-							if (
-								statusDetails ===
-									window.google.maps.places.PlacesServiceStatus.OK &&
-								placeDetails?.photos
-							) {
-								const photoUrls = placeDetails.photos.map((photo) =>
-									photo.getUrl({ maxWidth: 1000, maxHeight: 1000 }),
-								);
-								setPhotos(photoUrls || []);
-							} else {
-								console.error("Failed to retrieve place details or photos.");
-							}
-						},
-					);
-				}
-			});
-		};
 	
 		const getPinColors = () => {
 			if (marker.visitedByCurrentUser) {
@@ -204,7 +155,6 @@ const GoogleMapComponent = () => {
 						<MarkerDetailsSheet
 							trigger={infoWindowShown}
 							marker={marker}
-							photoUrls={photos}
 							confirmText="Delete"
 							cancelText="Cancel"
 							onCancel={() => setInfoWindowShown(false)}

@@ -58,7 +58,6 @@ import CircleProgress from "~/components/ui/circle-progress";
 type MarkerDetailsSheetProps = {
   trigger: boolean;
   marker: MarkerWithVisitStatus;
-  photoUrls: string[];
   onConfirm?: () => void;
   onCancel?: () => void;
   confirmText?: string;
@@ -80,7 +79,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   trigger,
   marker,
   onCancel,
-  photoUrls,
 }) => {
   const { data: session } = useSession();
   const utils = api.useUtils();
@@ -317,39 +315,6 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               </div>
             </CardContent>
           </Card>
-
-          {photoUrls.length > 0 && (
-            <div className="mt-6">
-              <Carousel
-                className="w-full max-w-2xl"
-                opts={{
-                  align: "start",
-                  loop: true,
-                }}
-              >
-                <CarouselContent className="-ml-1 flex">
-                  {photoUrls.map((photoUrl: string, index: number) => (
-                    <CarouselItem
-                      key={index}
-                      className="flex w-full justify-center"
-                    >
-                      <div className="p-1">
-                        <Image
-                          src={photoUrl}
-                          alt="Location"
-                          className="mx-auto h-80 w-full max-w-md rounded-lg object-cover"
-                          width={800}
-                          height={600}
-                        />
-                      </div>
-                    </CarouselItem>
-                  ))}
-                </CarouselContent>
-                <CarouselPrevious />
-                <CarouselNext />
-              </Carousel>
-            </div>
-          )}
 
           <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
             <Button

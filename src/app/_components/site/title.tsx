@@ -66,7 +66,6 @@ const Title: React.FC = () => {
                 <FaInfoCircle size={20} />
                 <span>How this works?</span>
               </Link>
-              {/* Add more paths as needed */}
             </nav>
           </div>
         </SheetContent>

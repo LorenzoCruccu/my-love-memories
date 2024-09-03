@@ -40,7 +40,7 @@ export const markerRouter = createTRPCRouter({
 					}
 					: false, // Skip the MarkerVisit inclusion if userId is undefined
 			},
-		});
+				});
 
 		// Map over the markers to add a 'visitedByCurrentUser' flag if user is logged in
 		return markers.map((marker) => {
