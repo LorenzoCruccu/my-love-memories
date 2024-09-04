@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Button } from "~/components/ui/button";
-import { FaTrophy, FaPlus, FaSignInAlt } from "react-icons/fa";
+import { FaTrophy, FaPlus, FaSignInAlt, FaUser } from "react-icons/fa";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { signIn, useSession } from "next-auth/react";
 import UserDetailsModal from "../user/user-details-modal";
@@ -65,7 +65,7 @@ function ControlPanel({ onAdd }: ControlPanelProps) {
             </Avatar>
           </div>
         ) : (
-          <FaSignInAlt size={20} />
+          <FaUser size={20} />
         )}
       </Button>
 

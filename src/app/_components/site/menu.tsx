@@ -11,7 +11,7 @@ import {
 import { Button } from "~/components/ui/button";
 import { FaBars, FaHome, FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 
 const Menu: React.FC = () => {
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
