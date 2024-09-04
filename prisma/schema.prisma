@@ -19,7 +19,7 @@ model Marker {
   title                   String
   description             String
   mood                    String? //peaceful, romantic, passionate
-  partnerName             String
+  partnerName             String?
   partnerInstagram        String?
   suggestedSpotifySongUrl String? //url to spotify song
 

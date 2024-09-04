@@ -12,7 +12,7 @@ import { Button } from "~/components/ui/button";
 import { FaBars, FaHome, FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
 
-const Title: React.FC = () => {
+const Menu: React.FC = () => {
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
 
   const handleOpenSheet = () => {
@@ -44,9 +44,9 @@ const Title: React.FC = () => {
 
       {/* Sheet for displaying site info */}
       <Sheet open={isSheetOpen} onOpenChange={handleCloseSheet}>
-        <SheetContent side="left" className="w-64 sm:w-80 bg-slate-200">
+        <SheetContent side="left" className="w-64 sm:w-80 bg-purple-100">
           <SheetHeader>
-            <SheetTitle className="text-xl font-bold">Hide and Hit</SheetTitle>
+            <SheetTitle className="text-xl font-bold text-purple-700">Hide and Hit</SheetTitle>
           </SheetHeader>
           <div className="px-4 py-6 space-y-4">
             <nav className="space-y-4">
@@ -74,4 +74,4 @@ const Title: React.FC = () => {
   );
 };
 
-export default Title;
+export default Menu;

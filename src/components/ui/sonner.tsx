@@ -26,7 +26,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         },
       }}
       {...props}
-      position="bottom-center" // Setting the position to top-center
+      position="top-center" // Setting the position to top-center
     />
   );
 };

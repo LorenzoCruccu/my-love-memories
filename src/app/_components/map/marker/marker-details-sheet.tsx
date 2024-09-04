@@ -23,6 +23,7 @@ import {
   FaUmbrellaBeach,
   FaUser,
   FaUserFriends,
+  FaInstagram,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -46,6 +47,7 @@ import { Badge } from "~/components/ui/badge";
 import { TbTargetArrow } from "react-icons/tb";
 import { Spotify } from "react-spotify-embed";
 import CircleProgress from "~/components/ui/circle-progress";
+import Link from "next/link";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
@@ -207,7 +209,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
           {/* Progress Bar Card */}
           <Card className="flex flex-col items-center justify-center pb-4 shadow-lg">
             <CircleProgress
@@ -234,10 +236,35 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
             </Button>
           </Card>
 
+          <Card className="flex flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
+            <h3 className="mb-2 text-lg font-bold">
+              You shared this experience with
+            </h3>
+            {marker.partnerName && (
+              <p className="text-3xl text-gray-800 pb-3">{marker.partnerName}</p>
+            )}
+
+            <div className="flex items-center">
+              {/* Link to Instagram Profile */}
+              <Link
+                href={`https://instagram.com/${marker.partnerInstagram}`}
+                passHref
+              >
+                <Badge
+                  variant="outline"
+                  className="flex cursor-pointer items-center gap-1 text-lg"
+                >
+                  <FaInstagram className="mr-2 text-pink-600" />
+                  <p className="text-gray-600">@{marker.partnerInstagram}</p>
+                </Badge>
+              </Link>
+            </div>
+          </Card>
+
           {/* Spotify Song Card */}
           {marker.suggestedSpotifySongUrl && (
             <Card className="flex items-center justify-center shadow-lg">
-              <div className="w-full max-w-xl">
+              <div className="w-full max-w-xl px-4">
                 <Spotify wide link={marker.suggestedSpotifySongUrl} />
               </div>
             </Card>

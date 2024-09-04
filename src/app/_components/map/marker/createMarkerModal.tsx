@@ -75,6 +75,8 @@ export function CreateMarkerModal({
         lng: newMarkerLocation.lng,
         address: newMarkerLocation.address!,
         mood,
+				partnerName,
+				partnerInstagram,
         suggestedSpotifySongUrl,
       });
     }
@@ -123,7 +125,7 @@ export function CreateMarkerModal({
               </Label>
               <Input
                 id="partner-name"
-                value={title}
+                value={partnerName}
                 onChange={(e) => setPartnerName(e.target.value)}
                 placeholder="Your partner name"
                 className="sm:col-span-3"
@@ -136,7 +138,7 @@ export function CreateMarkerModal({
               </Label>
               <Input
                 id="partner-instagram"
-                value={title}
+                value={partnerInstagram}
                 onChange={(e) => setPartnerInstagram(e.target.value)}
                 placeholder="Paste Instagram URL"
                 className="sm:col-span-3"
