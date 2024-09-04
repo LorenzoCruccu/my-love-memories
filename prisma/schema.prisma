@@ -12,7 +12,7 @@ datasource db {
 }
 
 model Marker {
-  id                      Int          @id @default(autoincrement())
+  id                      Int     @id @default(autoincrement())
   lat                     Float
   lng                     Float
   address                 String
@@ -88,16 +88,30 @@ model MarkerVisit {
   @@unique([markerId, userId]) // Ensures a user can mark a marker as visited only once
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
+model Objective {
+  id          Int     @id @default(autoincrement())
+  code        String
+  name        String 
+  description String? 
+  targetValue Int 
+
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  createdBy   User   @relation(fields: [createdById], references: [id])
-  createdById String
+  userObjectives UserObjective[]
+}
 
-  @@index([name])
+model UserObjective {
+  id           Int       @id @default(autoincrement())
+  userId       String
+  objectiveId  Int
+  progress     Int       @default(0) // Progress in percentage (0-100)
+  currentValue Int       @default(0) // Current value towards the objective (e.g., how many spots have been marked)
+  completedAt  DateTime? // Nullable field, only set when the objective is completed
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  objective Objective @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, objectiveId]) // Ensure a user can only complete an objective once
 }
 
 // Necessary for Next auth
@@ -136,14 +150,14 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
-  posts         Post[]
 
   Marker        Marker[]
   MarkerComment MarkerComment[]
   CommentLike   CommentLike[]
   MarkerVisit   MarkerVisit[]
 
-  MarkerVote MarkerVote[]
+  MarkerVote     MarkerVote[]
+  UserObjectives UserObjective[]
 }
 
 model VerificationToken {

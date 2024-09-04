@@ -4,28 +4,34 @@ import { FaTrophy, FaPlus, FaSignInAlt } from "react-icons/fa";
 import { Avatar, AvatarImage, AvatarFallback } from "@radix-ui/react-avatar";
 import { signIn, useSession } from "next-auth/react";
 import UserDetailsModal from "../user/user-details-modal";
+import ObjectivesModal from "../user/user-objectives-modal";
 
 type ControlPanelProps = {
   onAdd: () => void;
-  onTrophyClick: () => void;
+  onTrophyClick: () => void; // You can remove this now if no longer needed
 };
 
-function ControlPanel({ onAdd, onTrophyClick }: ControlPanelProps) {
+function ControlPanel({ onAdd }: ControlPanelProps) {
   const { data: session } = useSession();
-  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [isUserModalOpen, setIsUserModalOpen] = React.useState(false);
+  const [isObjectivesModalOpen, setIsObjectivesModalOpen] = React.useState(false); // For objectives modal
 
   const handleUserClick = () => {
     if (session) {
-      setIsModalOpen(true); // Open the modal if the user is logged in
+      setIsUserModalOpen(true); // Open the modal if the user is logged in
     } else {
       void signIn();
     }
   };
 
+  const handleTrophyClick = () => {
+    setIsObjectivesModalOpen(true); // Open the objectives modal
+  };
+
   return (
     <div className="control-panel flex items-center space-x-4 rounded-lg p-4 shadow-lg">
       <Button
-        onClick={onTrophyClick}
+        onClick={handleTrophyClick} // Open objectives modal on trophy click
         className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-white transition duration-300 ease-in-out hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
       >
         <FaTrophy />
@@ -60,12 +66,19 @@ function ControlPanel({ onAdd, onTrophyClick }: ControlPanelProps) {
         )}
       </Button>
 
+      {/* User details modal */}
       {session && (
         <UserDetailsModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          isOpen={isUserModalOpen}
+          onClose={() => setIsUserModalOpen(false)}
         />
       )}
+
+      {/* Objectives modal */}
+      <ObjectivesModal
+        isOpen={isObjectivesModalOpen}
+        onClose={() => setIsObjectivesModalOpen(false)}
+      />
     </div>
   );
 }
