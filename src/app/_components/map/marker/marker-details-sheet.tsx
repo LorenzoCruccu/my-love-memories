@@ -241,12 +241,15 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               You shared this experience with
             </h3>
             {marker.partnerName && (
-              <p className="text-3xl text-gray-800 pb-3">{marker.partnerName}</p>
+              <p className="pb-3 text-3xl text-gray-800">
+                {marker.partnerName}
+              </p>
             )}
 
             <div className="flex items-center">
               {/* Link to Instagram Profile */}
               <Link
+                target="_blank"
                 href={`https://instagram.com/${marker.partnerInstagram}`}
                 passHref
               >
