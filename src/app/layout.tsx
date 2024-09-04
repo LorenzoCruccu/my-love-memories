@@ -16,8 +16,8 @@ import { Toaster } from "~/components/ui/sonner";
 import Menu from "./_components/site/menu";
 
 export const metadata: Metadata = {
-  title: "Hide and Hit",
-  description: "Mark your favorite places, discover new ones!",
+  title: "My Love Memories",
+  description: "Mark your favorite places with your loved one",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 

@@ -24,6 +24,7 @@ import {
   FaUser,
   FaUserFriends,
   FaInstagram,
+	FaHeartbeat,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -323,11 +324,11 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               >
                 {marker.visitedByCurrentUser ? (
                   <>
-                    <FaCheck className="mr-2" /> Visited
+                    <FaHeartbeat className="mr-2" /> Visited
                   </>
                 ) : (
                   <>
-                    <TbTargetArrow className="mr-2" /> HIT this marker!
+                    <FaHeart className="mr-2" /> Cherish this memory
                   </>
                 )}
               </Button>

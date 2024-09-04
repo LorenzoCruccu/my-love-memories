@@ -32,20 +32,23 @@ function ControlPanel({ onAdd }: ControlPanelProps) {
     <div className="control-panel flex items-center space-x-4 rounded-lg p-4 shadow-lg">
       <Button
         onClick={handleTrophyClick} // Open objectives modal on trophy click
-        className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-500 text-white transition duration-300 ease-in-out hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+				variant={'actionAnimated'}
+        className="flex h-12 w-12 rounded-full bg-yellow-500 text-white"
       >
-        <FaTrophy />
+        <FaTrophy size={16} />
       </Button>
 
       <Button
         onClick={onAdd}
-        className="focus:ring-purple-400 flex h-14 w-14 items-center justify-center rounded-full bg-purple px-4 py-2 text-white transition duration-300 ease-in-out hover:bg-lightPurple focus:outline-none focus:ring-2"
+				variant={'actionAnimated'}
+        className="flex h-14 w-14 bg-gradient-to-r from-pink-500 to-purple-700 text-white"
       >
         <FaPlus size={24} />
       </Button>
 
       <Button
         onClick={handleUserClick}
+				variant={'actionAnimated'}
         className="relative flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-gray-600 transition duration-300 ease-in-out hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-400"
       >
         {session ? (

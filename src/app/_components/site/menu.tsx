@@ -11,9 +11,11 @@ import {
 import { Button } from "~/components/ui/button";
 import { FaBars, FaHome, FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 
 const Menu: React.FC = () => {
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
+  const pathname = usePathname(); // Get current path
 
   const handleOpenSheet = () => {
     setIsSheetOpen(true);
@@ -26,6 +28,9 @@ const Menu: React.FC = () => {
   const handleLinkClick = () => {
     handleCloseSheet(); // Close the sheet when a link is clicked
   };
+
+  // Utility function to check if a link is active
+  const isActive = (path: string) => pathname === path;
 
   return (
     <div className="absolute z-30 left-0 top-0 mt-2 flex items-center p-2 space-x-3 cursor-pointer">
@@ -44,15 +49,19 @@ const Menu: React.FC = () => {
 
       {/* Sheet for displaying site info */}
       <Sheet open={isSheetOpen} onOpenChange={handleCloseSheet}>
-        <SheetContent side="left" className="w-64 sm:w-80 bg-purple-100">
+        <SheetContent side="left" className="w-64 sm:w-80 bg-gradient-to-b from-purple to-pink-800 text-white">
           <SheetHeader>
-            <SheetTitle className="text-xl font-bold text-purple-700">Hide and Hit</SheetTitle>
+            <SheetTitle className="text-xl font-bold text-white">My love memories</SheetTitle>
           </SheetHeader>
           <div className="px-4 py-6 space-y-4">
             <nav className="space-y-4">
               <Link
                 href="/"
-                className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
+                  isActive("/") 
+                    ? "bg-purple-900 text-white" // Active state
+                    : "text-white hover:bg-purple-600 hover:scale-105"
+                }`}
                 onClick={handleLinkClick}
               >
                 <FaHome size={20} />
@@ -60,7 +69,11 @@ const Menu: React.FC = () => {
               </Link>
               <Link
                 href="/about"
-                className="flex items-center space-x-3 text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
+                  isActive("/about") 
+                    ? "bg-purple-900 text-white" // Active state
+                    : "text-white hover:bg-purple-600 hover:scale-105"
+                }`}
                 onClick={handleLinkClick}
               >
                 <FaInfoCircle size={20} />
