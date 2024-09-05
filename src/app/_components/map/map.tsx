@@ -115,13 +115,15 @@ const GoogleMapComponent = () => {
     }, []);
     console.log(marker);
 
-    const pinColors = marker.isShared
+    const pinStyle = marker.isShared
       ? {
+				scale:1.3,
           background: "#AD49E1", // lightPurple for visited markers
           borderColor: "#7A1CAC", // purple
           glyphColor: "#EBD3F8", // lavender
         }
       : {
+				scale:1.1,
           background: "#D3D3D3", // grey for unvisited markers
           borderColor: "#696969", // dark grey
           glyphColor: "#696969", // dim grey
@@ -135,14 +137,15 @@ const GoogleMapComponent = () => {
       >
         <div className="relative">
           <Pin
-            background={pinColors.background}
-            borderColor={pinColors.borderColor}
-            glyphColor={pinColors.glyphColor}
+						scale={pinStyle.scale}
+            background={pinStyle.background}
+            borderColor={pinStyle.borderColor}
+            glyphColor={pinStyle.glyphColor}
           >
             <Avatar className="h-full w-full">
               {marker.createdBy.image ? (
                 <AvatarImage
-                  className="h-5 w-5 rounded-full object-cover"
+                  className={"h-5 w-5 rounded-full object-cover"}
                   src={marker.createdBy.image ?? ""}
                   alt={marker.createdBy.name ?? "User avatar"}
                 />

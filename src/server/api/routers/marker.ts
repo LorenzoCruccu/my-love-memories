@@ -103,7 +103,7 @@ export const markerRouter = createTRPCRouter({
 		const userId = ctx.session?.user?.id;
 
 		if (!userId) {
-			throw new Error("User not authenticated");
+			return []
 		}
 
 		const markers = await ctx.db.marker.findMany({
@@ -113,8 +113,8 @@ export const markerRouter = createTRPCRouter({
 				MarkerComment: true,
 				createdBy: {
 					select: {
-						image:true,
-						name:true,
+						image: true,
+						name: true,
 					},
 				},
 			},
@@ -126,13 +126,8 @@ export const markerRouter = createTRPCRouter({
 		}));
 	}),
 
-
-	getSharedMarkers: protectedProcedure.query(async ({ ctx }) => {
+	getSharedMarkers: publicProcedure.query(async ({ ctx }) => {
 		const userId = ctx.session?.user?.id;
-
-		if (!userId) {
-			return []
-		}
 
 		// Fetch all markers that are shared and not created by the current user
 		const sharedMarkers = await ctx.db.marker.findMany({
@@ -141,15 +136,15 @@ export const markerRouter = createTRPCRouter({
 				MarkerComment: true,
 				createdBy: {
 					select: {
-						image:true,
-						name:true
+						image: true,
+						name: true
 					},
 				},
 			},
 			where: {
 				isShared: true,
 				createdById: {
-					not: userId, // Exclude markers created by the current user
+					not: userId ?? undefined, // Exclude markers created by the current user
 				},
 			},
 
