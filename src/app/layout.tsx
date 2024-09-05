@@ -14,7 +14,7 @@ import NextAuthProvider from "~/providers/next-auth-provider";
 import { AlertDialogProvider } from "~/providers/alert-dialog-provider";
 import { Toaster } from "~/components/ui/sonner";
 import Menu from "./_components/site/menu";
-
+import MicrosoftClarity from "./metrics/MicrosoftClarity";
 export const metadata: Metadata = {
   title: "My Love Memories",
   description: "Mark your favorite places with your loved one",
@@ -32,6 +32,7 @@ export default async function RootLayout({
           fontSans.variable,
         )}
       >
+				        <MicrosoftClarity />
         <TRPCReactProvider>
           <NextAuthProvider>
             <AlertDialogProvider>
