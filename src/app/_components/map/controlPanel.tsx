@@ -8,7 +8,6 @@ import ObjectivesModal from "../user/user-objectives-modal";
 
 type ControlPanelProps = {
   onAdd: () => void;
-  onTrophyClick: () => void; // You can remove this now if no longer needed
 };
 
 function ControlPanel({ onAdd }: ControlPanelProps) {

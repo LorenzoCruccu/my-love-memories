@@ -54,6 +54,7 @@ export function CreateMarkerModal({
   const createMarker = api.marker.create.useMutation({
     onSuccess: async () => {
       await utils.marker.invalidate();
+			await utils.objective.invalidate(); // refresh objective stats
       setOpen(false);
       toast.success("You flagged this spot!");
 
@@ -136,13 +137,13 @@ export function CreateMarkerModal({
 
 						<div className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:items-center">
               <Label htmlFor="partner-instagram" className="sm:text-right">
-                Partner Instagram
+                Partner Instagram Nickname
               </Label>
               <Input
                 id="partner-instagram"
                 value={partnerInstagram}
                 onChange={(e) => setPartnerInstagram(e.target.value)}
-                placeholder="Paste Instagram URL"
+                placeholder="Paste Instagram Nickname"
                 className="sm:col-span-3"
               />
             </div>

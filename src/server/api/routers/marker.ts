@@ -55,7 +55,7 @@ export const markerRouter = createTRPCRouter({
       mood: z.string().optional(),
       partnerName: z.string().optional(),
       partnerInstagram: z.string().optional(),
-      suggestedSpotifySongUrl: z.string().url().optional(),
+      suggestedSpotifySongUrl: z.string().url().or(z.literal('')),
     })
   )
   .mutation(async ({ ctx, input }) => {

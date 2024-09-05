@@ -24,7 +24,7 @@ const center = {
 };
 
 const GoogleMapComponent = () => {
-  const { data: allUserMarkers, isPending } = api.marker.getUserMarkers.useQuery();
+  const { data: allUserMarkers } = api.marker.getUserMarkers.useQuery();
   const { data: session } = useSession();
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
@@ -36,10 +36,6 @@ const GoogleMapComponent = () => {
   } | null>(null);
   const [userCanAdd, setUserCanAdd] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState(true); // Loading state for the map
-
-  const handleTrophyClick = () => {
-    console.log("trophy icon clicked");
-  };
 
   const handleMarkerCreated = () => {
     setShowDialog(false);
@@ -104,7 +100,7 @@ const GoogleMapComponent = () => {
     });
   };
 
-  const MarkerWithInfoWindow: React.FC<{
+  const MarkerSpot: React.FC<{
     marker: MarkerWithVisitStatus;
   }> = ({ marker }) => {
     const [markerRef, markerInstance] = useAdvancedMarkerRef();
@@ -114,23 +110,17 @@ const GoogleMapComponent = () => {
       setInfoWindowShown((isShown) => !isShown);
     }, []);
 
-    const getPinColors = () => {
-      if (marker.visitedByCurrentUser) {
-        return {
+    const pinColors = marker.visitedByCurrentUser
+      ? {
           background: "#AD49E1", // lightPurple for visited markers
           borderColor: "#7A1CAC", // purple
           glyphColor: "#EBD3F8", // lavender
+        }
+      : {
+          background: "#D3D3D3", // grey for unvisited markers
+          borderColor: "#696969", // dark grey
+          glyphColor: "#696969", // dim grey
         };
-      }
-
-      return {
-        background: "#D3D3D3", // grey for unvisited markers
-        borderColor: "#696969", // dark grey
-        glyphColor: "#696969", // dim grey
-      };
-    };
-
-    const pinColors = getPinColors();
 
     return (
       <AdvancedMarker
@@ -173,11 +163,11 @@ const GoogleMapComponent = () => {
       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
       libraries={["places"]}
     >
-      {(isLoading) && (
+      {isLoading && (
         <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-b from-[#D3B1C2] to-[#613659] text-white">
           <div className="loader">
             <Image
-              className="rounded-full w-44 h-44"
+              className="h-44 w-44 rounded-full"
               src={"/static/my-love-memories.png"}
               alt={"logo my love memories"}
               sizes="auto"
@@ -227,11 +217,11 @@ const GoogleMapComponent = () => {
         )}
 
         <MapHandler place={selectedPlace} />
-        <ControlPanel onAdd={handleAdd} onTrophyClick={handleTrophyClick} />
+        <ControlPanel onAdd={handleAdd} />
         {allUserMarkers &&
           allUserMarkers.length > 0 &&
           allUserMarkers.map((_marker) => (
-            <MarkerWithInfoWindow key={_marker.id} marker={_marker} />
+            <MarkerSpot key={_marker.id} marker={_marker} />
           ))}
       </Map>
     </APIProvider>
