@@ -90,6 +90,18 @@ const Menu: React.FC = () => {
                 <FaInfoCircle size={20} />
                 <span>How this works?</span>
               </Link>
+							<Link
+                href="/terms-conditions"
+                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
+                  isActive("/terms-conditions") 
+                    ? "bg-purple-900 text-white" // Active state
+                    : "text-white hover:bg-purple-600 hover:scale-105"
+                }`}
+                onClick={handleLinkClick}
+              >
+                <FaInfoCircle size={20} />
+                <span>Terms and Conditions</span>
+              </Link>
             </nav>
           </div>
         </SheetContent>
