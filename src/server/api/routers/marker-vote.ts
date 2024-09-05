@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 
 export const markerVote = createTRPCRouter({
   voteMarker: protectedProcedure
@@ -92,7 +92,7 @@ export const markerVote = createTRPCRouter({
       return { success: true };
     }),
 
-  getTotalVotes: protectedProcedure
+  getTotalVotes: publicProcedure
     .input(
       z.object({
         markerId: z.number(),

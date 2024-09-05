@@ -223,7 +223,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               className="flex flex-col items-center"
               onClick={() => handleVote("UP")}
             >
-              {userVote?.hasVoted ? (
+              {session?.user && userVote?.hasVoted ? (
                 <>
                   <FaThumbsDown className="text-red-500" />
                   Remove Vote
