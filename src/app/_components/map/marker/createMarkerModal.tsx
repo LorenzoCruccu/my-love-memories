@@ -142,6 +142,7 @@ export function CreateMarkerModal({
               <Input
                 id="partner-instagram"
                 value={partnerInstagram}
+								maxLength={30}
                 onChange={(e) => setPartnerInstagram(e.target.value)}
                 placeholder="Paste Instagram Nickname"
                 className="sm:col-span-3"
