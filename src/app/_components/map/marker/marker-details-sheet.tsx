@@ -24,7 +24,7 @@ import {
   FaUser,
   FaUserFriends,
   FaInstagram,
-	FaHeartbeat,
+  FaHeartbeat,
 } from "react-icons/fa";
 import { toast } from "sonner";
 import { Button } from "~/components/ui/button";
@@ -49,6 +49,7 @@ import { TbTargetArrow } from "react-icons/tb";
 import { Spotify } from "react-spotify-embed";
 import CircleProgress from "~/components/ui/circle-progress";
 import Link from "next/link";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 type MarkerDetailsSheetProps = {
   trigger: boolean;
@@ -93,9 +94,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const handleIsShared = api.marker.toggleIsShared.useMutation({
     onSuccess: async () => {
       await utils.markerComment.invalidate();
-      const message = marker.isShared
-        ? "Back in time!"
-        : "Good job!";
+      const message = marker.isShared ? "Back in time!" : "Good job!";
       toast.success(message);
       marker.isShared = !marker.isShared;
     },
@@ -103,7 +102,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const addComment = api.markerComment.create.useMutation({
     onSuccess: async () => {
-			handleIsShared.mutate({ id: marker.id });
+      handleIsShared.mutate({ id: marker.id });
       setIsCommentModalOpen(false);
     },
   });
@@ -162,7 +161,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const voteMarker = api.markerVote.voteMarker.useMutation({
     onSuccess: async () => {
       await utils.markerVote.invalidate();
-			await utils.objective.invalidate(); // refresh objective stats
+      await utils.objective.invalidate(); // refresh objective stats
       toast.success("Vote recorded!");
     },
   });
@@ -170,7 +169,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const removeVote = api.markerVote.removeVote.useMutation({
     onSuccess: async () => {
       await utils.markerVote.invalidate();
-			await utils.objective.invalidate(); // refresh objective stats
+      await utils.objective.invalidate(); // refresh objective stats
       toast.success("Vote removed!");
     },
   });
@@ -220,33 +219,52 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               level={level}
               voteCount={totalVotes ?? 0}
             />
-            <Button
-              variant="outline"
-              className="flex flex-col items-center"
-              onClick={() => handleVote("UP")}
-            >
-              {session?.user && userVote?.hasVoted ? (
-                <>
-                  <FaThumbsDown className="text-red-500" />
-                  Remove Vote
-                </>
-              ) : (
-                <>
-                  <FaThumbsUp className="text-green-500" />
-                  Upvote
-                </>
-              )}
-            </Button>
+            {session?.user && (
+              <Button
+                variant="outline"
+                className="flex flex-col items-center"
+                onClick={() => handleVote("UP")}
+              >
+                {userVote?.hasVoted ? (
+                  <>
+                    <FaThumbsDown className="text-red-500" />
+                    Remove Vote
+                  </>
+                ) : (
+                  <>
+                    <FaThumbsUp className="text-green-500" />
+                    Upvote
+                  </>
+                )}
+              </Button>
+            )}
           </Card>
 
           <Card className="flex flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
-            <h3 className="mb-2 text-lg font-bold">
-							{ session?.user.id === marker.createdById ?
-							" You shared this experience with" :
-							marker.createdBy.name + " shared this experience with"
-							}
-             
+            <h3 className="mb-2 flex items-center text-lg font-bold">
+                <>
+                  {/* Avatar for createdBy */}
+                  <Avatar className="mr-2 h-6 w-6">
+                    {marker.createdBy.image ? (
+                      <AvatarImage
+                        className={"h-6 w-6 rounded-full object-cover"}
+                        src={marker.createdBy.image}
+                        alt={marker.createdBy.name ?? "User avatar"}
+                      />
+                    ) : (
+                      <AvatarFallback className="flex h-full w-full items-center justify-center text-lg">
+                        {marker.createdBy.name
+                          ? marker.createdBy.name.charAt(0)
+                          : ""}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <span>
+                    {session?.user.id === marker.createdById ? "You" : marker.createdBy.name} shared this experience with
+                  </span>
+                </>
             </h3>
+
             {marker.partnerName && (
               <p className="pb-3 text-3xl text-gray-800">
                 {marker.partnerName}
