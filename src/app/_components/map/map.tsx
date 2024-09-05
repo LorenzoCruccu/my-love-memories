@@ -177,8 +177,8 @@ const GoogleMapComponent = () => {
         <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-b from-[#D3B1C2] to-[#613659] text-white">
           <div className="loader">
             <Image
-              className="h-full w-auto object-contain rounded-full"
-              src={"/static/my-love-memories-no-bg.png"}
+              className="rounded-full w-44 h-44"
+              src={"/static/my-love-memories.png"}
               alt={"logo my love memories"}
               sizes="auto"
               height={500}

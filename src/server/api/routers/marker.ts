@@ -6,18 +6,6 @@ import {
 	publicProcedure,
 } from "~/server/api/trpc";
 
-export const getLevelAndProgress = (voteCount: number) => {
-	if (voteCount <= 10) {
-		return { level: 1, progress: (voteCount / 10) * 100 };
-	} else if (voteCount <= 50) {
-		return { level: 2, progress: ((voteCount - 10) / 40) * 100 };
-	} else {
-		return { level: 3, progress: 100 };
-	}
-};
-
-
-
 export const markerRouter = createTRPCRouter({
 
 	getAllMarkers: publicProcedure.query(async ({ ctx }) => {
@@ -46,13 +34,11 @@ export const markerRouter = createTRPCRouter({
 		return markers.map((marker) => {
 			const commentsCount = marker.MarkerComment.length
 			const voteCount = marker.votes.length;
-			const { level } = getLevelAndProgress(voteCount);
 
 			return {
 				...marker,
 				visitedByCurrentUser: userId ? marker.MarkerVisit.length > 0 : false,
 				commentsCount,
-				level
 			};
 		});
 
@@ -178,13 +164,10 @@ export const markerRouter = createTRPCRouter({
 		return markers.map((marker) => {
 			const commentsCount = marker.MarkerComment.length;
 			const voteCount = marker.votes.length;
-			const { level } = getLevelAndProgress(voteCount);
-
 			return {
 				...marker,
 				visitedByCurrentUser: marker.MarkerVisit.length > 0,
 				commentsCount,
-				level,
 			};
 		});
 	}),
