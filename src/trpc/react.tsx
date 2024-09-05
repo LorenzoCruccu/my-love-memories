@@ -31,7 +31,7 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
 
 
 //custom
-export type MarkerWithVisitStatus =  RouterOutputs['marker']['getAllMarkers'][number];  
+export type MarkerWithVisitStatus =  RouterOutputs['marker']['getUserMarkers'][number];  
 
 
 /**

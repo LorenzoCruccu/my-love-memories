@@ -22,6 +22,7 @@ model Marker {
   partnerName             String?
   partnerInstagram        String?
   suggestedSpotifySongUrl String? //url to spotify song
+  isShared                Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -30,7 +31,6 @@ model Marker {
   createdById String
 
   MarkerComment MarkerComment[]
-  MarkerVisit   MarkerVisit[] // Relation to track visits
   votes         MarkerVote[] // New relationship for voting
 
   @@index([title])
@@ -77,23 +77,12 @@ model CommentLike {
   @@unique([commentId, userId])
 }
 
-model MarkerVisit {
-  id        Int      @id @default(autoincrement())
-  markerId  Int
-  userId    String
-  visitedAt DateTime @default(now()) // Automatically records the time of the visit
-  marker    Marker   @relation(fields: [markerId], references: [id], onDelete: Cascade)
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([markerId, userId]) // Ensures a user can mark a marker as visited only once
-}
-
 model Objective {
   id          Int     @id @default(autoincrement())
   code        String
-  name        String 
-  description String? 
-  targetValue Int 
+  name        String
+  description String?
+  targetValue Int
 
   createdAt DateTime @default(now())
 
@@ -154,7 +143,6 @@ model User {
   Marker        Marker[]
   MarkerComment MarkerComment[]
   CommentLike   CommentLike[]
-  MarkerVisit   MarkerVisit[]
 
   MarkerVote     MarkerVote[]
   UserObjectives UserObjective[]

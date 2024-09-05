@@ -90,20 +90,20 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
   const { level, progress } = getLevelAndProgress(totalVotes ?? 0);
 
-  const toggleVisit = api.markerVisit.toggleVisit.useMutation({
+  const handleIsShared = api.marker.toggleIsShared.useMutation({
     onSuccess: async () => {
       await utils.markerComment.invalidate();
-      const message = marker.visitedByCurrentUser
+      const message = marker.isShared
         ? "Back in time!"
         : "Good job!";
       toast.success(message);
-      marker.visitedByCurrentUser = !marker.visitedByCurrentUser;
+      marker.isShared = !marker.isShared;
     },
   });
 
   const addComment = api.markerComment.create.useMutation({
     onSuccess: async () => {
-      toggleVisit.mutate({ markerId: marker.id });
+			handleIsShared.mutate({ id: marker.id });
       setIsCommentModalOpen(false);
     },
   });
@@ -144,8 +144,8 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   };
 
   const handleToggleVisit = () => {
-    if (marker.visitedByCurrentUser) {
-      toggleVisit.mutate({ markerId: marker.id });
+    if (marker.isShared) {
+      handleIsShared.mutate({ id: marker.id });
     } else {
       setIsCommentModalOpen(true);
     }
@@ -239,7 +239,11 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
 
           <Card className="flex flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
             <h3 className="mb-2 text-lg font-bold">
-              You shared this experience with
+							{ session?.user.id === marker.createdById ?
+							" You shared this experience with" :
+							marker.createdBy.name + " shared this experience with"
+							}
+             
             </h3>
             {marker.partnerName && (
               <p className="pb-3 text-3xl text-gray-800">
@@ -316,19 +320,19 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
               Directions
             </Button>
 
-            {session && (
+            {session?.user.id === marker.createdById && (
               <Button
-                variant={marker.visitedByCurrentUser ? "outline" : "default"}
+                variant={marker.isShared ? "outline" : "default"}
                 className="w-full sm:w-auto"
                 onClick={handleToggleVisit}
               >
-                {marker.visitedByCurrentUser ? (
+                {marker.isShared ? (
                   <>
-                    <FaHeartbeat className="mr-2" /> Visited
+                    <FaHeartbeat className="mr-2" /> Shared
                   </>
                 ) : (
                   <>
-                    <FaHeart className="mr-2" /> Cherish this memory
+                    <FaHeart className="mr-2" /> Share this memory with everyone
                   </>
                 )}
               </Button>

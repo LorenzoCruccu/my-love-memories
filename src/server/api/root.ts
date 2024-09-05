@@ -1,7 +1,6 @@
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { markerRouter } from "./routers/marker";
 import { markerCommentRouter } from "./routers/marker-comment";
-import { markerVisitRouter } from "./routers/marker-visit";
 import { markerVote } from "./routers/marker-vote";
 import { objectiveRouter } from "./routers/objective";
 
@@ -13,7 +12,6 @@ import { objectiveRouter } from "./routers/objective";
 export const appRouter = createTRPCRouter({
 	marker:markerRouter,
 	markerComment:markerCommentRouter,
-	markerVisit:markerVisitRouter,
 	markerVote:markerVote,
 	objective:objectiveRouter
 });

@@ -17,6 +17,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import MarkerDetailsSheet from "./marker/marker-details-sheet";
 import ControlPanel from "./controlPanel";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 const center = {
   lat: 42.5,
@@ -24,7 +25,10 @@ const center = {
 };
 
 const GoogleMapComponent = () => {
-  const { data: allUserMarkers } = api.marker.getUserMarkers.useQuery();
+  const { data: userMarkers } = api.marker.getUserMarkers.useQuery();
+  const { data: sharedMarkers } = api.marker.getSharedMarkers.useQuery();
+  const allMarkers = [...(userMarkers ?? []), ...(sharedMarkers ?? [])];
+
   const { data: session } = useSession();
   const [selectedPlace, setSelectedPlace] =
     useState<google.maps.places.PlaceResult | null>(null);
@@ -109,8 +113,9 @@ const GoogleMapComponent = () => {
     const handleMarkerClick = useCallback(() => {
       setInfoWindowShown((isShown) => !isShown);
     }, []);
+    console.log(marker);
 
-    const pinColors = marker.visitedByCurrentUser
+    const pinColors = marker.isShared
       ? {
           background: "#AD49E1", // lightPurple for visited markers
           borderColor: "#7A1CAC", // purple
@@ -134,7 +139,19 @@ const GoogleMapComponent = () => {
             borderColor={pinColors.borderColor}
             glyphColor={pinColors.glyphColor}
           >
-            {""}
+            <Avatar className="h-full w-full">
+              {marker.createdBy.image ? (
+                <AvatarImage
+                  className="h-5 w-5 rounded-full object-cover"
+                  src={marker.createdBy.image ?? ""}
+                  alt={marker.createdBy.name ?? "User avatar"}
+                />
+              ) : (
+                <AvatarFallback className="flex h-full w-full items-center justify-center text-lg">
+                  {marker.createdBy.name ? marker.createdBy.name.charAt(0) : ""}
+                </AvatarFallback>
+              )}
+            </Avatar>
           </Pin>
         </div>
 
@@ -218,9 +235,9 @@ const GoogleMapComponent = () => {
 
         <MapHandler place={selectedPlace} />
         <ControlPanel onAdd={handleAdd} />
-        {allUserMarkers &&
-          allUserMarkers.length > 0 &&
-          allUserMarkers.map((_marker) => (
+        {allMarkers &&
+          allMarkers.length > 0 &&
+          allMarkers.map((_marker) => (
             <MarkerSpot key={_marker.id} marker={_marker} />
           ))}
       </Map>
