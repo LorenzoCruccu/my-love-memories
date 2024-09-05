@@ -162,6 +162,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const voteMarker = api.markerVote.voteMarker.useMutation({
     onSuccess: async () => {
       await utils.markerVote.invalidate();
+			await utils.objective.invalidate(); // refresh objective stats
       toast.success("Vote recorded!");
     },
   });
@@ -169,6 +170,7 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   const removeVote = api.markerVote.removeVote.useMutation({
     onSuccess: async () => {
       await utils.markerVote.invalidate();
+			await utils.objective.invalidate(); // refresh objective stats
       toast.success("Vote removed!");
     },
   });
