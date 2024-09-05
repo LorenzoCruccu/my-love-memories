@@ -1,12 +1,13 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { Badge } from "~/components/ui/badge";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
-  SheetTitle,
 } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { FaBars, FaHome, FaInfoCircle } from "react-icons/fa";
@@ -50,8 +51,18 @@ const Menu: React.FC = () => {
       {/* Sheet for displaying site info */}
       <Sheet open={isSheetOpen} onOpenChange={handleCloseSheet}>
         <SheetContent side="left" className="w-64 sm:w-80 bg-gradient-to-b from-purple to-pink-800 text-white">
-          <SheetHeader>
-            <SheetTitle className="text-xl font-bold text-white">My love memories</SheetTitle>
+          <SheetHeader className="flex justify-center">
+            {/* Circle Logo */}
+            <div className="flex justify-center">
+              <Image
+                src="/static/my-love-memories.png" // Adjust the path to your logo image
+                alt="My Love Memories Logo"
+                width={120}  // Width of the logo
+                height={120} // Height of the logo
+                className="rounded-full"
+              />
+            </div>
+						<SheetClose  autoFocus={false} />
           </SheetHeader>
           <div className="px-4 py-6 space-y-4">
             <nav className="space-y-4">

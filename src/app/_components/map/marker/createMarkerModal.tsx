@@ -22,7 +22,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Slider } from "~/components/ui/slider";
 import { toast } from "sonner";
 
 // Define the props type
@@ -96,11 +95,12 @@ export function CreateMarkerModal({
           <div className="grid gap-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:items-center">
               <Label htmlFor="title" className="sm:text-right">
-                Title
+                Title*
               </Label>
               <Input
                 id="title"
                 value={title}
+								required
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Name this spot, be original!"
                 className="sm:col-span-3"
@@ -108,10 +108,11 @@ export function CreateMarkerModal({
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:items-center">
               <Label htmlFor="description" className="sm:text-right">
-                Description
+                Description*
               </Label>
               <Textarea
                 id="description"
+								required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="How do you recognize this spot?"
@@ -121,10 +122,11 @@ export function CreateMarkerModal({
 
 						<div className="grid grid-cols-1 gap-4 sm:grid-cols-4 sm:items-center">
               <Label htmlFor="partner-name" className="sm:text-right">
-                Partner Name
+                Partner Name*
               </Label>
               <Input
                 id="partner-name"
+								required
                 value={partnerName}
                 onChange={(e) => setPartnerName(e.target.value)}
                 placeholder="Your partner name"
