@@ -173,7 +173,7 @@ const GoogleMapComponent = () => {
       apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
       libraries={["places"]}
     >
-      {(isLoading || isPending) && (
+      {(isLoading) && (
         <div className="fixed left-0 top-0 z-50 flex h-full w-full items-center justify-center bg-gradient-to-b from-[#D3B1C2] to-[#613659] text-white">
           <div className="loader">
             <Image
