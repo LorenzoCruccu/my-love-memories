@@ -88,7 +88,7 @@ const Menu: React.FC = () => {
                 onClick={handleLinkClick}
               >
                 <FaInfoCircle size={20} />
-                <span>How this works?</span>
+                <span>About us</span>
               </Link>
 							<Link
                 href="/terms-conditions"

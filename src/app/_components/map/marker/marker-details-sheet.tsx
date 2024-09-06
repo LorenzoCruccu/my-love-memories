@@ -211,43 +211,47 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
           </SheetTitle>
         </SheetHeader>
 
-        <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="mt-4 flex w-full flex-wrap items-stretch gap-6">
           {/* Progress Bar Card */}
-          <Card className="flex flex-col items-center justify-center pb-4 shadow-lg">
-            <CircleProgress
-              progress={progress}
-              level={level}
-              voteCount={totalVotes ?? 0}
-            />
-            {session?.user && (
-              <Button
-                variant="outline"
-                className="flex flex-col items-center"
-                onClick={() => handleVote("UP")}
-              >
-                {userVote?.hasVoted ? (
-                  <>
-                    <FaThumbsDown className="text-red-500" />
-                    Remove Vote
-                  </>
-                ) : (
-                  <>
-                    <FaThumbsUp className="text-green-500" />
-                    Upvote
-                  </>
-                )}
-              </Button>
-            )}
-          </Card>
+          <div className="flex-grow">
+            <Card className="flex h-full flex-col items-center justify-center pb-4 shadow-lg">
+              <CircleProgress
+                progress={progress}
+                level={level}
+                voteCount={totalVotes ?? 0}
+              />
+              {session?.user && (
+                <Button
+                  variant="outline"
+                  className="flex flex-col items-center"
+                  onClick={() => handleVote("UP")}
+                >
+                  {userVote?.hasVoted ? (
+                    <>
+                      <FaThumbsDown className="text-red-500" />
+                      Remove Vote
+                    </>
+                  ) : (
+                    <>
+                      <FaThumbsUp className="text-green-500" />
+                      Upvote
+                    </>
+                  )}
+                </Button>
+              )}
+            </Card>
+          </div>
 
-          <Card className="flex flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
-            <h3 className="mb-2 flex items-center text-lg font-bold">
-                <>
-                  {/* Avatar for createdBy */}
+          {/* Shared Experience Card */}
+          <div className="flex-grow">
+            <Card className="flex h-full flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
+              <h3 className="mb-2 flex flex-col items-center text-center text-lg font-bold">
+                {/* Avatar and Name in the First Row */}
+                <div className="flex items-center">
                   <Avatar className="mr-2 h-6 w-6">
                     {marker.createdBy.image ? (
                       <AvatarImage
-                        className={"h-6 w-6 rounded-full object-cover"}
+                        className="h-6 w-6 rounded-full object-cover"
                         src={marker.createdBy.image}
                         alt={marker.createdBy.name ?? "User avatar"}
                       />
@@ -259,43 +263,54 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
                       </AvatarFallback>
                     )}
                   </Avatar>
-                  <span>
-                    {session?.user.id === marker.createdById ? "You" : marker.createdBy.name} shared this experience with
-                  </span>
-                </>
-            </h3>
+                  <p className="text-2xl text-gray-800">
+                    {session?.user.id === marker.createdById
+                      ? "You"
+                      : marker.createdBy.name}
+                  </p>
+                </div>
 
-            {marker.partnerName && (
-              <p className="pb-3 text-3xl text-gray-800">
-                {marker.partnerName}
-              </p>
-            )}
+                {/* Second Row with "shared this experience with" */}
+                <span className="mt-1">shared this experience with</span>
+              </h3>
 
-            <div className="flex items-center">
-              {/* Link to Instagram Profile */}
-              <Link
-                target="_blank"
-                href={`https://instagram.com/${marker.partnerInstagram}`}
-                passHref
-              >
-                <Badge
-                  variant="outline"
-                  className="flex cursor-pointer items-center gap-1 text-lg"
-                >
-                  <FaInstagram className="mr-2 text-pink-600" />
-                  <p className="text-gray-600">@{marker.partnerInstagram}</p>
-                </Badge>
-              </Link>
-            </div>
-          </Card>
+              {marker.partnerName && (
+                <p className="pb-3 text-3xl text-gray-800">
+                  {marker.partnerName}
+                </p>
+              )}
+              {marker.partnerInstagram && (
+                <div className="flex items-center">
+                  {/* Link to Instagram Profile */}
+                  <Link
+                    target="_blank"
+                    href={`https://instagram.com/${marker.partnerInstagram}`}
+                    passHref
+                  >
+                    <Badge
+                      variant="outline"
+                      className="flex cursor-pointer items-center gap-1 text-lg"
+                    >
+                      <FaInstagram className="mr-2 text-pink-600" />
+                      <p className="text-gray-600">
+                        @{marker.partnerInstagram}
+                      </p>
+                    </Badge>
+                  </Link>
+                </div>
+              )}
+            </Card>
+          </div>
 
           {/* Spotify Song Card */}
           {marker.suggestedSpotifySongUrl && (
-            <Card className="flex items-center justify-center shadow-lg">
-              <div className="w-full max-w-xl px-4">
-                <Spotify wide link={marker.suggestedSpotifySongUrl} />
-              </div>
-            </Card>
+            <div className="flex-grow">
+              <Card className="flex h-full items-center justify-center shadow-lg">
+                <div className="w-full max-w-xl px-4">
+                  <Spotify wide link={marker.suggestedSpotifySongUrl} />
+                </div>
+              </Card>
+            </div>
           )}
         </div>
 
