@@ -5,7 +5,7 @@
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
   padding: 12px 24px;
   position: absolute;
-  bottom: 3vh;
+  bottom: calc(24px + env(safe-area-inset-bottom));
   left: 50%;
   transform: translateX(-50%);
   outline: none;
