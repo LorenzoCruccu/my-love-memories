@@ -207,7 +207,7 @@ const GoogleMapComponent = () => {
       )}
 
       <Map
-        style={{ width: "100%", height: "100vh" }}
+        style={{ width: "100%", height: "100%" }}
         defaultCenter={center}
         defaultZoom={6}
         gestureHandling={"greedy"}
