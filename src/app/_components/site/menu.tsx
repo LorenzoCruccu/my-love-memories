@@ -7,16 +7,22 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
+  SheetTitle,
 } from "~/components/ui/sheet";
 import { Button } from "~/components/ui/button";
 import { FaBars, FaHome, FaInfoCircle } from "react-icons/fa";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+
+const version = process.env.VERCEL_GIT_COMMIT_SHA?.substring(0, 7) ?? '00current';
+const environment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
 
 const Menu: React.FC = () => {
   const [isSheetOpen, setIsSheetOpen] = React.useState(false);
-  const pathname = usePathname(); // Get current path
+  const pathname = usePathname();
 
   const handleOpenSheet = () => {
     setIsSheetOpen(true);
@@ -27,16 +33,15 @@ const Menu: React.FC = () => {
   };
 
   const handleLinkClick = () => {
-    handleCloseSheet(); // Close the sheet when a link is clicked
+    handleCloseSheet();
   };
 
-  // Utility function to check if a link is active
   const isActive = (path: string) => pathname === path;
 
   return (
-    <div className="absolute z-30 left-0 top-0 mt-2 flex items-center p-2 space-x-3 cursor-pointer">
+    <div className="absolute left-0 top-0 z-30 mt-2 flex cursor-pointer items-center space-x-3 p-2">
       <Badge
-        className="flex items-center rounded-full bg-purple hover:bg-lightPurple p-2 focus:bg-purple-700 sm:px-4 sm:py-2"
+        className="flex items-center rounded-full bg-purple p-2 hover:bg-lightPurple focus:bg-purple-700 sm:px-4 sm:py-2"
         onClick={handleOpenSheet}
       >
         <Button
@@ -48,30 +53,35 @@ const Menu: React.FC = () => {
         </Button>
       </Badge>
 
-      {/* Sheet for displaying site info */}
       <Sheet open={isSheetOpen} onOpenChange={handleCloseSheet}>
-        <SheetContent side="left" className="w-64 sm:w-80 bg-gradient-to-b from-purple to-pink-800 text-white">
+        <SheetContent
+          side="left"
+          className="w-64 bg-gradient-to-b from-purple to-pink-800 text-white sm:w-80"
+        >
           <SheetHeader className="flex justify-center">
-            {/* Circle Logo */}
+            <VisuallyHidden>
+              <SheetTitle>Menu</SheetTitle>
+              <SheetDescription>Menu</SheetDescription>
+            </VisuallyHidden>
             <div className="flex justify-center">
               <Image
-                src="/static/my-love-memories.png" // Adjust the path to your logo image
+                src="/static/my-love-memories.png"
                 alt="My Love Memories Logo"
-                width={120}  // Width of the logo
-                height={120} // Height of the logo
+                width={120}
+                height={120}
                 className="rounded-full"
               />
             </div>
-						<SheetClose  autoFocus={false} />
+            <SheetClose autoFocus={false} />
           </SheetHeader>
-          <div className="px-4 py-6 space-y-4">
+          <div className="space-y-4 px-4 py-6">
             <nav className="space-y-4">
               <Link
                 href="/"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
-                  isActive("/") 
-                    ? "bg-purple-900 text-white" // Active state
-                    : "text-white hover:bg-purple-600 hover:scale-105"
+                className={`flex items-center space-x-3 rounded-lg px-3 py-2 transition-all duration-300 ${
+                  isActive("/")
+                    ? "bg-purple-900 text-white"
+                    : "text-white hover:scale-105 hover:bg-purple-600"
                 }`}
                 onClick={handleLinkClick}
               >
@@ -80,22 +90,22 @@ const Menu: React.FC = () => {
               </Link>
               <Link
                 href="/about"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
-                  isActive("/about") 
-                    ? "bg-purple-900 text-white" // Active state
-                    : "text-white hover:bg-purple-600 hover:scale-105"
+                className={`flex items-center space-x-3 rounded-lg px-3 py-2 transition-all duration-300 ${
+                  isActive("/about")
+                    ? "bg-purple-900 text-white"
+                    : "text-white hover:scale-105 hover:bg-purple-600"
                 }`}
                 onClick={handleLinkClick}
               >
                 <FaInfoCircle size={20} />
                 <span>About us</span>
               </Link>
-							<Link
+              <Link
                 href="/terms-conditions"
-                className={`flex items-center space-x-3 px-3 py-2 rounded-lg transition-all duration-300 ${
-                  isActive("/terms-conditions") 
-                    ? "bg-purple-900 text-white" // Active state
-                    : "text-white hover:bg-purple-600 hover:scale-105"
+                className={`flex items-center space-x-3 rounded-lg px-3 py-2 transition-all duration-300 ${
+                  isActive("/terms-conditions")
+                    ? "bg-purple-900 text-white"
+                    : "text-white hover:scale-105 hover:bg-purple-600"
                 }`}
                 onClick={handleLinkClick}
               >
@@ -103,6 +113,10 @@ const Menu: React.FC = () => {
                 <span>Terms and Conditions</span>
               </Link>
             </nav>
+          </div>
+
+          <div className="absolute bottom-4 left-4 text-gray-400 text-sm">
+            {environment} v.{version}
           </div>
         </SheetContent>
       </Sheet>
