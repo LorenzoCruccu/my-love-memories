@@ -87,7 +87,7 @@ export function CreateMarkerModal({
       <DialogTrigger asChild className="flex w-full items-center justify-center">
         <Button variant="default">Flag this place</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[525px] w-full p-4">
+      <DialogContent className="sm:max-w-[525px] w-full overflow-y-auto max-h-[calc(100vh-64px)]">
         <DialogHeader>
           <DialogTitle>📍 {newMarkerLocation?.address}</DialogTitle>
           <DialogDescription>Add this place to your collection</DialogDescription>
