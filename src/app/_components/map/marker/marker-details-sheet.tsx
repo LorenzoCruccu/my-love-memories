@@ -197,228 +197,232 @@ const MarkerDetailsSheet: React.FC<MarkerDetailsSheetProps> = ({
   };
 
   return (
-    <Sheet open={trigger} onOpenChange={onCancel}>
-      <SheetContent side={"bottom"} className="pb-6 sm:p-8">
-        <SheetHeader>
-          <SheetTitle className="mt-2 text-center text-2xl font-bold">
-            {marker.title}
-            <div className="text-center text-sm text-gray-700">
-              <span className="flex justify-center pt-4">
-                <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
-                <span className="font-semibold">{marker?.address}</span>
-              </span>
-            </div>
-          </SheetTitle>
-        </SheetHeader>
-
-        <div className="mt-4 flex w-full flex-wrap items-stretch gap-6">
-          {/* Progress Bar Card */}
-          <div className="flex-grow">
-            <Card className="flex h-full flex-col items-center justify-center pb-4 shadow-lg">
-              <CircleProgress
-                progress={progress}
-                level={level}
-                voteCount={totalVotes ?? 0}
-              />
-              {session?.user && (
-                <Button
-                  variant="outline"
-                  className="flex flex-col items-center"
-                  onClick={() => handleVote("UP")}
-                >
-                  {userVote?.hasVoted ? (
-                    <>
-                      <FaThumbsDown className="text-red-500" />
-                      Remove Vote
-                    </>
-                  ) : (
-                    <>
-                      <FaThumbsUp className="text-green-500" />
-                      Upvote
-                    </>
-                  )}
-                </Button>
-              )}
-            </Card>
-          </div>
-
-          {/* Shared Experience Card */}
-          <div className="flex-grow">
-            <Card className="flex h-full flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
-              <h3 className="mb-2 flex flex-col items-center text-center text-lg font-bold">
-                {/* Avatar and Name in the First Row */}
-                <div className="flex items-center">
-                  <Avatar className="mr-2 h-6 w-6">
-                    {marker.createdBy.image ? (
-                      <AvatarImage
-                        className="h-6 w-6 rounded-full object-cover"
-                        src={marker.createdBy.image}
-                        alt={marker.createdBy.name ?? "User avatar"}
-                      />
-                    ) : (
-                      <AvatarFallback className="flex h-full w-full items-center justify-center text-lg">
-                        {marker.createdBy.name
-                          ? marker.createdBy.name.charAt(0)
-                          : ""}
-                      </AvatarFallback>
-                    )}
-                  </Avatar>
-                  <p className="text-2xl text-gray-800">
-                    {session?.user.id === marker.createdById
-                      ? "You"
-                      : marker.createdBy.name}
-                  </p>
-                </div>
-
-                {/* Second Row with "shared this experience with" */}
-                <span className="mt-1">shared this experience with</span>
-              </h3>
-
-              {marker.partnerName && (
-                <p className="pb-3 text-3xl text-gray-800">
-                  {marker.partnerName}
-                </p>
-              )}
-              {marker.partnerInstagram && (
-                <div className="flex items-center">
-                  {/* Link to Instagram Profile */}
-                  <Link
-                    target="_blank"
-                    href={`https://instagram.com/${marker.partnerInstagram}`}
-                    passHref
-                  >
-                    <Badge
-                      variant="outline"
-                      className="flex cursor-pointer items-center gap-1 text-lg"
-                    >
-                      <FaInstagram className="mr-2 text-pink-600" />
-                      <p className="text-gray-600">
-                        @{marker.partnerInstagram}
-                      </p>
-                    </Badge>
-                  </Link>
-                </div>
-              )}
-            </Card>
-          </div>
-
-          {/* Spotify Song Card */}
-          {marker.suggestedSpotifySongUrl && (
-            <div className="flex-grow">
-              <Card className="flex h-full items-center justify-center shadow-lg">
-                <div className="w-full max-w-xl px-4">
-                  <Spotify wide link={marker.suggestedSpotifySongUrl} />
-                </div>
-              </Card>
-            </div>
-          )}
+<Sheet open={trigger} onOpenChange={onCancel}>
+  <SheetContent
+    side={"bottom"}
+    className="pb-6 sm:p-8 overflow-y-auto max-h-[calc(100vh-64px)]"
+  >
+    <SheetHeader>
+      <SheetTitle className="mt-2 text-center text-2xl font-bold">
+        {marker.title}
+        <div className="text-center text-sm text-gray-700">
+          <span className="flex justify-center pt-4">
+            <HiLocationMarker className="mr-2 h-5 w-5 text-red-500" />
+            <span className="font-semibold">{marker?.address}</span>
+          </span>
         </div>
+      </SheetTitle>
+    </SheetHeader>
 
-        <div className="mt-4">
-          <Card className="shadow-lg">
-            <CardHeader>
-              <p className="text-center text-sm text-gray-500">
-                {marker.description}
-              </p>
-            </CardHeader>
-            <CardContent>
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex flex-wrap justify-center gap-2">
-                  {marker.mood && (
-                    <Badge
-                      variant="outline"
-                      className="flex items-center gap-1 text-xs"
-                    >
-                      {getPillIcon(marker.mood)} {marker.mood}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
+    <div className="mt-4 flex w-full flex-wrap items-stretch gap-6 overflow-y-scroll">
+      {/* Progress Bar Card */}
+      <div className="flex-grow">
+        <Card className="flex h-full flex-col items-center justify-center pb-4 shadow-lg">
+          <CircleProgress
+            progress={progress}
+            level={level}
+            voteCount={totalVotes ?? 0}
+          />
+          {session?.user && (
             <Button
               variant="outline"
-              className="flex items-center"
-              onClick={() => setIsCommentsDialogOpen(true)}
+              className="flex flex-col items-center"
+              onClick={() => handleVote("UP")}
             >
-              <FaComments className="text-blue-500" />
-              <span className="ml-1 text-sm">{marker.commentsCount}</span>
+              {userVote?.hasVoted ? (
+                <>
+                  <FaThumbsDown className="text-red-500" />
+                  Remove Vote
+                </>
+              ) : (
+                <>
+                  <FaThumbsUp className="text-green-500" />
+                  Upvote
+                </>
+              )}
             </Button>
-            <Button
-              variant={"outline"}
-              className="w-full sm:w-auto"
-              onClick={handleGetDirections}
-            >
-              <FaDirections className="mr-2" />
-              Directions
-            </Button>
+          )}
+        </Card>
+      </div>
 
-            {session?.user.id === marker.createdById && (
-              <Button
-                variant={marker.isShared ? "outline" : "default"}
-                className="w-full sm:w-auto"
-                onClick={handleToggleVisit}
-              >
-                {marker.isShared ? (
-                  <>
-                    <FaHeartbeat className="mr-2" /> Shared
-                  </>
+      {/* Shared Experience Card */}
+      <div className="flex-grow">
+        <Card className="flex h-full flex-col items-center justify-center rounded-lg bg-white p-6 pb-4 shadow-lg">
+          <h3 className="mb-2 flex flex-col items-center text-center text-lg font-bold">
+            {/* Avatar and Name in the First Row */}
+            <div className="flex items-center">
+              <Avatar className="mr-2 h-6 w-6">
+                {marker.createdBy.image ? (
+                  <AvatarImage
+                    className="h-6 w-6 rounded-full object-cover"
+                    src={marker.createdBy.image}
+                    alt={marker.createdBy.name ?? "User avatar"}
+                  />
                 ) : (
-                  <>
-                    <FaHeart className="mr-2" /> Share this memory with everyone
-                  </>
+                  <AvatarFallback className="flex h-full w-full items-center justify-center text-lg">
+                    {marker.createdBy.name
+                      ? marker.createdBy.name.charAt(0)
+                      : ""}
+                  </AvatarFallback>
                 )}
-              </Button>
-            )}
+              </Avatar>
+              <p className="text-2xl text-gray-800">
+                {session?.user.id === marker.createdById
+                  ? "You"
+                  : marker.createdBy.name}
+              </p>
+            </div>
 
-            {marker.createdById === session?.user.id && (
-              <Button
-                variant={"destructive"}
-                className="w-full sm:w-auto"
-                onClick={(e) => handleDelete(e, marker)}
+            {/* Second Row with "shared this experience with" */}
+            <span className="mt-1">shared this experience with</span>
+          </h3>
+
+          {marker.partnerName && (
+            <p className="pb-3 text-3xl text-gray-800">
+              {marker.partnerName}
+            </p>
+          )}
+          {marker.partnerInstagram && (
+            <div className="flex items-center">
+              {/* Link to Instagram Profile */}
+              <Link
+                target="_blank"
+                href={`https://instagram.com/${marker.partnerInstagram}`}
+                passHref
               >
-                <HiTrash className="mr-2" />
-                Delete
-              </Button>
-            )}
-          </div>
+                <Badge
+                  variant="outline"
+                  className="flex cursor-pointer items-center gap-1 text-lg"
+                >
+                  <FaInstagram className="mr-2 text-pink-600" />
+                  <p className="text-gray-600">
+                    @{marker.partnerInstagram}
+                  </p>
+                </Badge>
+              </Link>
+            </div>
+          )}
+        </Card>
+      </div>
+
+      {/* Spotify Song Card */}
+      {marker.suggestedSpotifySongUrl && (
+        <div className="flex-grow">
+          <Card className="flex h-full items-center justify-center shadow-lg">
+            <div className="w-full max-w-xl px-4">
+              <Spotify wide link={marker.suggestedSpotifySongUrl} />
+            </div>
+          </Card>
         </div>
-      </SheetContent>
+      )}
+    </div>
 
-      <Dialog
-        open={isCommentsDialogOpen}
-        onOpenChange={setIsCommentsDialogOpen}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>
-              <h3 className="text-lg font-bold">Comments</h3>
-            </DialogTitle>
-          </DialogHeader>
-          <MarkerComments markerId={marker.id} />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={isCommentModalOpen} onOpenChange={setIsCommentModalOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add a Comment</DialogTitle>
-          </DialogHeader>
-          <textarea
-            className="w-full rounded-md border border-gray-300 p-2"
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            placeholder="Share your experience about this marker..."
-          />
-          <div className="mt-4 flex justify-end">
-            <Button onClick={handleCommentSubmit}>Submit</Button>
+    <div className="mt-4">
+      <Card className="shadow-lg">
+        <CardHeader>
+          <p className="text-center text-sm text-gray-500">
+            {marker.description}
+          </p>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-wrap justify-center gap-2">
+              {marker.mood && (
+                <Badge
+                  variant="outline"
+                  className="flex items-center gap-1 text-xs"
+                >
+                  {getPillIcon(marker.mood)} {marker.mood}
+                </Badge>
+              )}
+            </div>
           </div>
-        </DialogContent>
-      </Dialog>
-    </Sheet>
+        </CardContent>
+      </Card>
+
+      <div className="mt-6 flex flex-col justify-end gap-4 sm:flex-row">
+        <Button
+          variant="outline"
+          className="flex items-center"
+          onClick={() => setIsCommentsDialogOpen(true)}
+        >
+          <FaComments className="text-blue-500" />
+          <span className="ml-1 text-sm">{marker.commentsCount}</span>
+        </Button>
+        <Button
+          variant={"outline"}
+          className="w-full sm:w-auto"
+          onClick={handleGetDirections}
+        >
+          <FaDirections className="mr-2" />
+          Directions
+        </Button>
+
+        {session?.user.id === marker.createdById && (
+          <Button
+            variant={marker.isShared ? "outline" : "default"}
+            className="w-full sm:w-auto"
+            onClick={handleToggleVisit}
+          >
+            {marker.isShared ? (
+              <>
+                <FaHeartbeat className="mr-2" /> Shared
+              </>
+            ) : (
+              <>
+                <FaHeart className="mr-2" /> Share this memory with everyone
+              </>
+            )}
+          </Button>
+        )}
+
+        {marker.createdById === session?.user.id && (
+          <Button
+            variant={"destructive"}
+            className="w-full sm:w-auto"
+            onClick={(e) => handleDelete(e, marker)}
+          >
+            <HiTrash className="mr-2" />
+            Delete
+          </Button>
+        )}
+      </div>
+    </div>
+  </SheetContent>
+  
+  <Dialog
+    open={isCommentsDialogOpen}
+    onOpenChange={setIsCommentsDialogOpen}
+  >
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>
+          <h3 className="text-lg font-bold">Comments</h3>
+        </DialogTitle>
+      </DialogHeader>
+      <MarkerComments markerId={marker.id} />
+    </DialogContent>
+  </Dialog>
+
+  <Dialog open={isCommentModalOpen} onOpenChange={setIsCommentModalOpen}>
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>Add a Comment</DialogTitle>
+      </DialogHeader>
+      <textarea
+        className="w-full rounded-md border border-gray-300 p-2"
+        rows={4}
+        value={comment}
+        onChange={(e) => setComment(e.target.value)}
+        placeholder="Share your experience about this marker..."
+      />
+      <div className="mt-4 flex justify-end">
+        <Button onClick={handleCommentSubmit}>Submit</Button>
+      </div>
+    </DialogContent>
+  </Dialog>
+</Sheet>
+
   );
 };
 

@@ -5,14 +5,14 @@
   box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
   padding: 12px 24px;
   position: absolute;
-  bottom: 24px; /* Adjust the bottom margin as needed */
+  bottom: 3vh;
   left: 50%;
   transform: translateX(-50%);
   outline: none;
   cursor: auto;
   box-sizing: border-box;
-  background-color: white; /* Optional: set a background color */
-  border-radius: 8px; /* Optional: add some border radius for better visuals */
+  background-color: white;
+  border-radius: 8px;
 }
 
 
