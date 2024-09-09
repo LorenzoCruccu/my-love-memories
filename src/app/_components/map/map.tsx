@@ -113,8 +113,7 @@ const GoogleMapComponent = () => {
     const handleMarkerClick = useCallback(() => {
       setInfoWindowShown((isShown) => !isShown);
     }, []);
-    console.log(marker);
-
+		
     const pinStyle = marker.isShared
       ? {
 				scale:1.3,
