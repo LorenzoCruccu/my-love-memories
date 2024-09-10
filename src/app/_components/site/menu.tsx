@@ -18,7 +18,6 @@ import { usePathname } from "next/navigation";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 const version = process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA?.substring(0, 7) ?? '00current';
-console.log('commit sha \n'+ process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA);
 const environment = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
 
 const Menu: React.FC = () => {
